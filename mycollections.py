@@ -14,30 +14,36 @@ class HashtableOA:
         self.count = 0
                 
     def get(self, k):
-        hash = index = self._hashfunc(k)
+        h = index = self._hashfunc(k)
         step = 1
         while self.l[index] is not None and self.l[index][0] != k:
-            hash += step
-            index = hash % len(self.l)
+            h += step
+            index = h % len(self.l)
 
         if self.l[index] is None:
             return None
-        else:
+        elif self.l[index][0] == k:
             return self.l[index][1]
+        else:
+            raise Exception("uhhhh")
 
     def put(self, k, v):
-        hash = self._hashfunc(k)
-        if self.l[hash] is None:
-            self.l[hash] = (k, v)
+        h = self._hashfunc(k)
+        boo = 'no clash'
+        if self.l[h] is None:
+            self.l[h] = (k, v)
             self.count += 1
         else:
             # linear probing method
-            probe = self._linear_probe(k, hash, 1)
-            if self.l[probe] is None:
+            index = self._linear_probe(k, h, 1)
+            boo = 'clashed'
+            if self.l[index] is None:
                 self.count += 1
-            self.l[probe] = (k, v)
+                boo = 'clashed and found an empty spot'
+            self.l[index] = (k, v)
 
         if self.count > .7 * len(self.l):
+            print("resized")
             # resize
             self.count = 0
             old_l = self.l
@@ -46,16 +52,27 @@ class HashtableOA:
                 if x is not None:
                     self.put(x[0], x[1])
 
-    def remove(self, k):
-        # TODO
-        pass
+        return boo
 
-    def _linear_probe(self, k, hash, step):
-        probe = (hash + step) % len(self.l)
-        if self.l[probe] is None or self.l[probe][0] == k:
-            return probe
+    def _linear_probe(self, k, h, step):
+        h += step
+        index = h % len(self.l)
+        if self.l[index] is None or self.l[index][0] == k:
+            return index
         else:
-            return self._linear_probe(k, hash + 1, step)
+            return self._linear_probe(k, h, step)
+
+    def remove(self, k):
+        hash = index = self._hashfunc(k)
+        step = 1
+        while self.l[index] is not None and self.l[index][0] != k:
+            hash += step
+            index = hash % len(self.l)
+
+        pair = self.l[index]
+        if self.l[index] is not None:
+            self.l[index] = None
+        return pair
 
     def _hashfunc(self, k):
         """ m <= size of array """
@@ -74,17 +91,9 @@ def main(args):
         h.put(k, i)
     print(h.l)
 
-    k,v = 752, 7521
-
-    print("Getting {} ====> {}".format(k, h.get(k)))
-
-    print("Putting {},{}".format(k, v))
-    h.put(k, v)
-
-    print("Getting {} ====> {}".format(k, h.get(k)))
-
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser()
-    parser.add_argument('krange', help='k range')
-    args = parser.parse_args()
-    main(args)
+    pass
+    # parser = argparse.ArgumentParser()
+    # parser.add_argument('krange', help='k range')
+    # args = parser.parse_args()
+    # main(args)
