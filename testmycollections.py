@@ -14,9 +14,11 @@ class TestHashTable(unittest.TestCase):
         manualcount = self._count_size(self.ht)
         self.assertEqual(self.ht.count, manualcount)
 
-    # def test_getput(self):
-    #     ht = mycollections.HashtableOA()
-    #     k, v = 752
+    def test_getput(self):
+        k, v = 752, 7521
+        self.assertNotEqual(self.ht.get(k), v)
+        self.ht.put(k, v)
+        self.assertEqual(self.ht.get(k), v)
 
     def _count_size(self, ht):
         c = 0
