@@ -27,7 +27,6 @@ class HashtableOA:
 
     def put(self, k, v):
         h = self._hashfunc(k)
-        boo = 'no clash'
         if self.l[h] is None or self.l[h][0] == k:
             if self.l[h] is None:
                 self.count += 1
@@ -35,14 +34,11 @@ class HashtableOA:
         else:
             # linear probing method
             index = self._linear_probe(k, h, 1)
-            boo = 'clashed'
             if self.l[index] is None:
                 self.count += 1
-                boo = 'clashed and found an empty spot'
             self.l[index] = (k, v)
 
         if self.count > .7 * len(self.l):
-            print("resized")
             # resize
             self.count = 0
             old_l = self.l

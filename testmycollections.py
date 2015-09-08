@@ -15,10 +15,25 @@ class TestHashTable(unittest.TestCase):
         self.assertEqual(self.ht.count, manualcount)
 
     def test_getput(self):
+        ht = self.ht
         k, v = 752, 7521
-        self.assertNotEqual(self.ht.get(k), v)
-        self.ht.put(k, v)
-        self.assertEqual(self.ht.get(k), v)
+        self.assertNotEqual(ht.get(k), v)
+        b = ht.put(k, v)
+        self.assertEqual(ht.get(k), v)
+
+    # def test_remove(self):
+    #     ht = self.ht
+    #     k, v = 233, 8939
+    #     b = ht.put(k, v)
+    #     if b:
+    #         print("no clash")
+    #     else:
+    #         print("a clash")
+    #     self.assertEqual(ht.get(k), v)
+    #     pair = ht.remove(k)
+    #     self.assertEqual(pair[0], k)
+    #     self.assertEqual(pair[1], v)
+    #     self.assertEqual(ht.get(k), None)
 
     def _count_size(self, ht):
         c = 0
