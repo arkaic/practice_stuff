@@ -14,25 +14,24 @@ class HashtableOA:
         self.count = 0
                 
     def get(self, k):
-        h = index = self._hashfunc(k)
-        step = 1
-        while self.l[index] is not None and self.l[index][0] != k:
-            h += step
-            index = h % len(self.l)
-
-        if self.l[index] is None:
+        h = self._hashfunc(k)
+        if self.l[h] is None:
             return None
-        elif self.l[index][0] == k:
-            return self.l[index][1]
+        elif self.l[h][0] == k:
+            return self.l[h][1]
         else:
-            raise Exception("uhhhh")
+            h = self._linear_probe(k, h, 1)
+            if self.l[h]:
+                return self.l[h][1]
+            return self.l[h]
 
     def put(self, k, v):
         h = self._hashfunc(k)
         boo = 'no clash'
-        if self.l[h] is None:
+        if self.l[h] is None or self.l[h][0] == k:
+            if self.l[h] is None:
+                self.count += 1
             self.l[h] = (k, v)
-            self.count += 1
         else:
             # linear probing method
             index = self._linear_probe(k, h, 1)
@@ -55,6 +54,9 @@ class HashtableOA:
         return boo
 
     def _linear_probe(self, k, h, step):
+        """ Returns an index pointing to either an empty position or one that
+        contains the tuple with the key  
+        """
         h += step
         index = h % len(self.l)
         if self.l[index] is None or self.l[index][0] == k:
@@ -72,6 +74,7 @@ class HashtableOA:
         pair = self.l[index]
         if self.l[index] is not None:
             self.l[index] = None
+            self.count -= 1
         return pair
 
     def _hashfunc(self, k):
