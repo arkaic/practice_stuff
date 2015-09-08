@@ -47,6 +47,21 @@ class HashtableOA:
                 if x is not None:
                     self.put(x[0], x[1])
 
+    def remove(self, k):
+        h = index = self._hashfunc(k)
+        pair = self.l[h]
+        if pair:
+            if pair[0] == k:
+                self.l[h] = None
+                self.count -= 1
+            else:
+                h = self._linear_probe(k, h, 1)
+                pair = self.l[h]
+                if pair:
+                    self.l[h] = None
+                    self.count -= 1
+        return pair
+
     def _linear_probe(self, k, h, step):
         """ Returns an index pointing to either an empty position or one that
         contains the tuple with the key  
@@ -57,19 +72,6 @@ class HashtableOA:
             return index
         else:
             return self._linear_probe(k, h, step)
-
-    def remove(self, k):
-        hash = index = self._hashfunc(k)
-        step = 1
-        while self.l[index] is not None and self.l[index][0] != k:
-            hash += step
-            index = hash % len(self.l)
-
-        pair = self.l[index]
-        if self.l[index] is not None:
-            self.l[index] = None
-            self.count -= 1
-        return pair
 
     def _hashfunc(self, k):
         """ m <= size of array """
