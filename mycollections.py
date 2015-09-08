@@ -43,6 +43,16 @@ class HashtableOA:
             self.count -= 1
         return pair
 
+    def _hashfunc(self, k):
+        """ m <= list_size """
+        a = 0.67
+        m = len(self.l)  # prime
+        h = floor(m * (k * a - floor(k * a)))
+
+        if self.l[h] and self.l[h][0] != k:
+            h = self._linear_probe(k, h, 1)
+        return h
+
     def _linear_probe(self, k, h, step):
         """ Returns an index pointing to either an empty position or one that
         contains the tuple with the key  
@@ -53,14 +63,4 @@ class HashtableOA:
             return index
         else:
             return self._linear_probe(k, h, step)
-
-    def _hashfunc(self, k):
-        """ m <= list_size """
-        a = 0.67
-        m = len(self.l)  # prime
-        h = floor(m * (k * a - floor(k * a)))
-
-        if self.l[h] and self.l[h][0] != k:
-            h = self._linear_probe(k, h, 1)
-        return h
 
