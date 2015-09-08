@@ -47,9 +47,8 @@ def quicksort_inplace(a, l, r):
 ################################################################################
 
 import random, sys
-# sys.setrecursionlimit(10)
 
 if len(sys.argv) == 2:
-    a = [random.randrange(0, 100) for x in range(int(sys.argv[1]))]
+    a = [random.randrange(100) for x in range(int(sys.argv[1]))]
     print('{}\n'.format(a))
     print('\n{}'.format(quicksort_inplace(a, 0, len(a) - 1)))
