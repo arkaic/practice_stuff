@@ -47,8 +47,6 @@ class HashtableOA:
                 if x is not None:
                     self.put(x[0], x[1])
 
-        return boo
-
     def _linear_probe(self, k, h, step):
         """ Returns an index pointing to either an empty position or one that
         contains the tuple with the key  
