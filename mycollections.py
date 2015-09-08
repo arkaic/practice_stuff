@@ -17,26 +17,14 @@ class HashtableOA:
         h = self._hashfunc(k)
         if self.l[h] is None:
             return None
-        elif self.l[h][0] == k:
-            return self.l[h][1]
         else:
-            h = self._linear_probe(k, h, 1)
-            if self.l[h]:
-                return self.l[h][1]
-            return self.l[h]
+            return self.l[h][1]
 
     def put(self, k, v):
         h = self._hashfunc(k)
-        if self.l[h] is None or self.l[h][0] == k:
-            if self.l[h] is None:
-                self.count += 1
-            self.l[h] = (k, v)
-        else:
-            # linear probing method
-            index = self._linear_probe(k, h, 1)
-            if self.l[index] is None:
-                self.count += 1
-            self.l[index] = (k, v)
+        if self.l[h] is None:
+            self.count += 1
+        self.l[h] = (k, v)
 
         if self.count > .7 * len(self.l):
             # resize
@@ -51,15 +39,8 @@ class HashtableOA:
         h = index = self._hashfunc(k)
         pair = self.l[h]
         if pair:
-            if pair[0] == k:
-                self.l[h] = None
-                self.count -= 1
-            else:
-                h = self._linear_probe(k, h, 1)
-                pair = self.l[h]
-                if pair:
-                    self.l[h] = None
-                    self.count -= 1
+            self.l[h] = None
+            self.count -= 1
         return pair
 
     def _linear_probe(self, k, h, step):
@@ -74,25 +55,12 @@ class HashtableOA:
             return self._linear_probe(k, h, step)
 
     def _hashfunc(self, k):
-        """ m <= size of array """
+        """ m <= list_size """
         a = 0.67
         m = len(self.l)  # prime
-        return floor(m * (k * a - floor(k * a)))
+        h = floor(m * (k * a - floor(k * a)))
 
-################################################################################
+        if self.l[h] and self.l[h][0] != k:
+            h = self._linear_probe(k, h, 1)
+        return h
 
-
-def main(args):
-    k_range = args.krange
-    h = HashtableOA()
-    for i in range(1000):
-        k = randrange(k_range)
-        h.put(k, i)
-    print(h.l)
-
-if __name__ == '__main__':
-    pass
-    # parser = argparse.ArgumentParser()
-    # parser.add_argument('krange', help='k range')
-    # args = parser.parse_args()
-    # main(args)
