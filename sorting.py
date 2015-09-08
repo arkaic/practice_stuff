@@ -41,14 +41,3 @@ def quicksort_inplace(a, l, r):
         quicksort_inplace(a, pivot + 1, r)
 
     return a
-
-
-################################################################################
-################################################################################
-
-import random, sys
-
-if len(sys.argv) == 2:
-    a = [random.randrange(100) for x in range(int(sys.argv[1]))]
-    print('{}\n'.format(a))
-    print('\n{}'.format(quicksort_inplace(a, 0, len(a) - 1)))

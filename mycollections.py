@@ -36,11 +36,21 @@ class HashtableOA:
                     self.put(x[0], x[1])
 
     def remove(self, k):
-        h = index = self._hashfunc(k)
+        h = self._hashfunc(k)
         pair = self.l[h]
         if pair:
             self.l[h] = None
             self.count -= 1
+
+        if self.count < .2 * len(self.l):
+            # resize
+            self.count = 0
+            old_l = self.l
+            self.l = [None] * (len(old_l) / 2)
+            for x in old_l:
+                if x is not None:
+                    self.put(x[0], x[1])
+
         return pair
 
     def _hashfunc(self, k):
