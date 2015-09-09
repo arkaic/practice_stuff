@@ -1,28 +1,31 @@
+
 class Vertex:
-    def __init__(self, edge):
-        self.vertices = []
+    def __init__(self, element=None):
+        self.adjacents = []
+        self.element = element
+
 
 class AdjListGraph:
-
     def __init__(self, path=None):
-        self.adj_list = []
-
+        self.vertices = []
         if path:
             # load adjlist specs from file 
-            # add to adj_list and edges
+            # add to vertices and edges
             pass
 
     def insert_edge(self, v, u):
         if not is_edge(v, u):
-            self.adj_list.append([v, u])
-            self.adj_list.append([u, v])
+            v.adjacents.append(u)
+            u.adjacents.append(v)
+            if v not in self.vertices: self.vertices.append(v)
+            if u not in self.vertices: self.vertices.append(u)
             return True
         return False
 
     def is_edge(self, v, u):
-        for adjacents in self.adj_list:
-            if adjacents[0] == v or adjacents[0] == u:
-                if u in adjacents[1:] or v in adjacents[1:]:
+        for vertex in self.vertices:
+            if vertex is v or vertex is u:
+                if u in vertex.adjacents or v in vertex.adjacents:
                     return True
                 else:
                     return False
