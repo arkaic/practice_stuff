@@ -43,13 +43,18 @@ class TestAdjListGraph(unittest.TestCase):
                 for t in self.g.vertices:
                     if u is t:
                         if v not in t.adjacents:
-                            t.adjacents.append(v)                            
-                            self.assertEqual(len(t.adjacents), len(set(t.adjacents)))    
-            self.assertEqual(len(v.adjacents), len(set(v.adjacents)))
+                            t.adjacents.append(v)
 
+        # make sure every adjacency list is unique, does not contain vertices
+        # that do not exist, and are connected both ways
         for v in self.g.vertices:
+            self.assertTrue(v not in v.adjacents)
             self.assertEqual(len(v.adjacents), len(set(v.adjacents)))
             self.assertLessEqual(len(v.adjacents), NUM_VERTICES)
+            for u in v.adjacents:
+                for t in self.g.vertices:
+                    if t is u:
+                        self.assertTrue(v in t.adjacents)
 
     def tearDown(self):
         self.g = None
@@ -80,6 +85,24 @@ class TestAdjListGraph(unittest.TestCase):
                 self.assertFalse(graph.is_edge(a, v))
                 self.assertFalse(graph.is_edge(s, t))
                 self.assertFalse(graph.is_edge(t, s))
+
+            self.tearDown()
+
+    def test_insert_edge(self):
+        for i in range(SAMPLESIZE):
+            if not self.g:
+                self.setUp()
+
+            ag = self.g
+            n = self.nums_generated
+
+
+
+            # make new vertices s and t
+            i, j = randrange(100), randrange(100)
+            while i in n or j in n:
+                i, j = randrange(100), randrange(100)
+            s, t = graphs.Vertex(i), graphs.Vertex(j)
 
             self.tearDown()
 
