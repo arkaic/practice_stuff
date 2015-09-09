@@ -10,15 +10,15 @@ class TestAdjListGraph(unittest.TestCase):
 
     def setUp(self):
         self.g = graphs.AdjListGraph()
-        self.nums_generated = []
+        self.generated_nums = []
 
         # generate vertices into a temp list, l
         c = 0
         while c < NUM_VERTICES:
             n = randrange(100)
-            while n in self.nums_generated:
+            while n in self.generated_nums:
                 n = randrange(100)
-            self.nums_generated.append(n)
+            self.generated_nums.append(n)
             v = graphs.Vertex(n)
             if v not in self.g.vertices:
                 self.g.vertices.append(v)
@@ -32,15 +32,11 @@ class TestAdjListGraph(unittest.TestCase):
         for v in self.g.vertices:
             # randomize amount of adjacents
             num_adjacent = randrange(2, MAX_INITCONNECTIONS_PER)
-            self.assertGreater(num_adjacent, 0)
             adjacents = sample(self.g.vertices, num_adjacent)
             if v in adjacents:
                 adjacents.remove(v)
             v.adjacents = adjacents
             self.assertEqual(len(adjacents), len(set(adjacents)))
-
-        for v in self.g.vertices:
-            self.assertGreater(len(v.adjacents), 0)
 
         # connect adjacent vertices the other way around
         for v in self.g.vertices:
@@ -50,6 +46,7 @@ class TestAdjListGraph(unittest.TestCase):
                         if v not in t.adjacents:
                             t.adjacents.append(v)
 
+        # assert that every vertex is connected to at least 1 other
         for v in self.g.vertices:
             self.assertGreater(len(v.adjacents), 0)
 
@@ -67,7 +64,7 @@ class TestAdjListGraph(unittest.TestCase):
 
     def tearDown(self):
         self.g = None
-        self.nums_generated = []
+        self.generated_nums = []
 
     def test_isedge(self):
         for i in range(SAMPLESIZE):
@@ -78,7 +75,7 @@ class TestAdjListGraph(unittest.TestCase):
 
             a = randrange(100)
             b = randrange(100)
-            while a in self.nums_generated or b in self.nums_generated:
+            while a in self.generated_nums or b in self.generated_nums:
                 a = randrange(100)
                 b = randrange(100)
 
@@ -104,16 +101,9 @@ class TestAdjListGraph(unittest.TestCase):
                 self.setUp()
 
             ag = self.g
-            n = self.nums_generated
+            n = self.generated_nums
 
-            # print('\n')
-            # for v in ag.vertices:
-            #     s = '[{}]: ['.format(v.element)
-            #     for u in v.adjacents:
-            #         s += '{}, '.format(u.element)
-            #     print(s + ']')
-
-            # get three existing vertices, two connected, one isn't 
+            # get two existing connected vertices
             v = sample(ag.vertices, 1)[0]
             u = sample(v.adjacents, 1)[0]
             all_adjacents = set(v.adjacents + u.adjacents)
@@ -121,8 +111,9 @@ class TestAdjListGraph(unittest.TestCase):
                 v = sample(ag.vertices, 1)[0]
                 u = sample(v.adjacents, 1)[0]
                 all_adjacents = set(v.adjacents + u.adjacents)
+
+            # get existing vertex not connected to v or u
             w = sample(ag.vertices, 1)[0]
-            # print('v={} u={}'.format(v.element, u.element))
             while w in all_adjacents:
                 w = sample(ag.vertices, 1)[0]
             self.assertTrue(ag.is_edge(v, u))
@@ -147,6 +138,50 @@ class TestAdjListGraph(unittest.TestCase):
             self.assertFalse(ag.insert_edge(u, w))
             self.assertFalse(ag.insert_edge(u, s))
             self.assertFalse(ag.insert_edge(t, r))
+
+            self.tearDown()
+
+    def test_remove_edge(self):
+        for i in range(SAMPLESIZE):
+            if not self.g:
+                self.setUp()
+
+            ag = self.g
+            n = self.generated_nums
+
+            # existing vertices
+            v = sample(ag.vertices, 1)[0]
+            u = sample(v.adjacents, 1)[0]
+            all_adjacents = set(v.adjacents + u.adjacents)
+            while len(all_adjacents) == len(ag.vertices):
+                v = sample(ag.vertices, 1)[0]
+                u = sample(v.adjacents, 1)[0]
+                all_adjacents = set(v.adjacents + u.adjacents)
+
+            # get existing vertex not connected to v or u
+            w = sample(ag.vertices, 1)[0]
+            while w in all_adjacents:
+                w = sample(ag.vertices, 1)[0]
+            self.assertTrue(ag.is_edge(v, u))
+            self.assertFalse(ag.is_edge(v, w))
+            self.assertFalse(ag.is_edge(u, w))
+
+            # make new vertices s and t
+            i, j, k = randrange(100), randrange(100), randrange(100)
+            while i in n or j in n or k in n:
+                i, j, k = randrange(100), randrange(100), randrange(100)
+            s, t, r = graphs.Vertex(i), graphs.Vertex(j), graphs.Vertex(k)
+
+            # v,u,w exists
+            # s,t,r dont
+
+            self.assertFalse(ag.remove_edge(v, w))
+            self.assertFalse(ag.remove_edge(v, s))
+            self.assertFalse(ag.remove_edge(w, s))
+            self.assertFalse(ag.remove_edge(s, t))
+            self.assertTrue(ag.remove_edge(v, u))
+            self.assertFalse(ag.remove_edge(v, u))
+            self.assertFalse(ag.remove_edge(u, v))
 
             self.tearDown()
 
