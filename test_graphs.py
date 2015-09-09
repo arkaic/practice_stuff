@@ -48,15 +48,23 @@ class TestAdjListGraph(unittest.TestCase):
 
     def test_isedge(self):
         graph = self.g
+
+        # a and b will be random vertices not found in graph
         a = random.randrange(100)
-        while a in self.l:
+        b = random.randrange(100)
+        while a in self.l or b in self.l:
             a = random.randrange(100)
+            b = random.randrange(100)
+
         for adjacents in graph.adj_list:
-            u = random.sample(adjacents[1:], 1)[0]            
+            # u is randomly chosen from adjacent vertices of vertex
+            u = random.sample(adjacents[1:], 1)[0]  
             self.assertTrue(graph.is_edge(adjacents[0], u))
             self.assertTrue(graph.is_edge(u, adjacents[0]))
             self.assertFalse(graph.is_edge(adjacents[0], a))
             self.assertFalse(graph.is_edge(a, adjacents[0]))
+            self.assertFalse(graph.is_edge(a, b))
+            self.assertFalse(graph.is_edge(b, a))
 
 
 

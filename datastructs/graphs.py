@@ -1,12 +1,6 @@
-
 class Vertex:
     def __init__(self, edge):
         self.vertices = []
-
-# class Edge:
-#     def __init__(self, v, u):
-#         self.v = v
-#         self.u = u
 
 class AdjListGraph:
 
@@ -22,23 +16,17 @@ class AdjListGraph:
         if not is_edge(v, u):
             self.adj_list.append([v, u])
             self.adj_list.append([u, v])
+            return True
+        return False
 
     def is_edge(self, v, u):
         for adjacents in self.adj_list:
-            if adjacents[0] == v:
-                if u not in adjacents:
+            if adjacents[0] == v or adjacents[0] == u:
+                if u in adjacents[1:] or v in adjacents[1:]:
+                    return True
+                else:
                     return False
-            elif adjacents[0] == u:
-                if v not in adjacents:
-                    return False
-        return True
+        return False
 
     def remove_edge(self):
         pass
-
-    def insert_vertex(self, v):
-        for a in self.adj_list:
-            if a[0] == v:
-                return False
-        self.adj_list.append([v])
-        return True
