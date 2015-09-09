@@ -1,8 +1,8 @@
 
 class Vertex:
-    def __init__(self, element=None):
-        self.adjacents = []
+    def __init__(self, element=None, adjacents=None):
         self.element = element
+        self.adjacents = adjacents
 
 
 class AdjListGraph:

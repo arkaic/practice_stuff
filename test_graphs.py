@@ -1,72 +1,87 @@
-import unittest, random
+import unittest
 from datastructs import graphs
+from random import randrange, sample
 
 NUM_VERTICES = 15
+SAMPLESIZE = 10
 
 class TestAdjListGraph(unittest.TestCase):
+
     def setUp(self):
         self.g = graphs.AdjListGraph()
+        self.nums_generated = []
 
         # generate vertices into a temp list, l
-        self.l = []
         c = 0
         while c < NUM_VERTICES:
-            v = random.randrange(100)
-            if v not in self.l:
-                self.l.append(v)
+            n = randrange(100)
+            while n in self.nums_generated:
+                n = randrange(100)
+            self.nums_generated.append(n)
+            v = graphs.Vertex(n)
+            if v not in self.g.vertices:
+                self.g.vertices.append(v)
                 c += 1
-        self.assertEqual(len(self.l), NUM_VERTICES)
-        print("vertices generated: {}".format(self.l))
+
+        # Assert there are NUM_VERTICES unique vertices in the graph
+        self.assertEqual(NUM_VERTICES, len(self.g.vertices))
+        self.assertEqual(NUM_VERTICES, len(set(self.g.vertices)))
 
         # generate adjacent vertices for each generated vertex
-        for v in self.l:
-            # randomize how much adjacents
-            num_adjacent = random.randrange(len(self.l) - 1)  
-            adjacents = random.sample(self.l, num_adjacent)
+        for v in self.g.vertices:
+            # randomize amount of adjacents
+            num_adjacent = randrange(1, NUM_VERTICES - 1)
+            adjacents = sample(self.g.vertices, num_adjacent)
             if v in adjacents:
                 adjacents.remove(v)
-            adjacents = [v] + adjacents  # prefix v to the list
-            self.g.adj_list.append(adjacents)
-            print(adjacents)
-
-        print("\n\n\n\n")
+            v.adjacents = adjacents
+            self.assertEqual(len(adjacents), len(set(adjacents)))
 
         # connect adjacent vertices the other way around
-        for adjacents in self.g.adj_list:
-            for u in adjacents:
-                if u != adjacents[0]:
-                    for adjs in self.g.adj_list:
-                        if adjs[0] == u:
-                            if not adjacents[0] in adjs:
-                                adjs.append(adjacents[0])
+        for v in self.g.vertices:
+            for u in v.adjacents:
+                for t in self.g.vertices:
+                    if u is t:
+                        if v not in t.adjacents:
+                            t.adjacents.append(v)                            
+                            self.assertEqual(len(t.adjacents), len(set(t.adjacents)))    
+            self.assertEqual(len(v.adjacents), len(set(v.adjacents)))
 
-        print("FINAL")
-        for adj in self.g.adj_list:
-            self.assertEqual(len(adj), len(set(adj)))
-            self.assertLessEqual(len(adj), NUM_VERTICES)
-            print(adj)
+        for v in self.g.vertices:
+            self.assertEqual(len(v.adjacents), len(set(v.adjacents)))
+            self.assertLessEqual(len(v.adjacents), NUM_VERTICES)
+
+    def tearDown(self):
+        self.g = None
+        self.nums_generated = []
 
     def test_isedge(self):
-        graph = self.g
+        for i in range(SAMPLESIZE):
+            if not self.g:
+                self.setUp()
 
-        # a and b will be random vertices not found in graph
-        a = random.randrange(100)
-        b = random.randrange(100)
-        while a in self.l or b in self.l:
-            a = random.randrange(100)
-            b = random.randrange(100)
+            graph = self.g
 
-        for adjacents in graph.adj_list:
-            # u is randomly chosen from adjacent vertices of vertex
-            u = random.sample(adjacents[1:], 1)[0]  
-            self.assertTrue(graph.is_edge(adjacents[0], u))
-            self.assertTrue(graph.is_edge(u, adjacents[0]))
-            self.assertFalse(graph.is_edge(adjacents[0], a))
-            self.assertFalse(graph.is_edge(a, adjacents[0]))
-            self.assertFalse(graph.is_edge(a, b))
-            self.assertFalse(graph.is_edge(b, a))
+            a = randrange(100)
+            b = randrange(100)
+            while a in self.nums_generated or b in self.nums_generated:
+                a = randrange(100)
+                b = randrange(100)
 
+            s = graphs.Vertex(a)
+            t = graphs.Vertex(b)
 
+            for v in graph.vertices:
+                # u is randomly chosen from adjacent vertices of vertex
+                u = sample(v.adjacents, 1)[0]
+                self.assertTrue(graph.is_edge(v, u))
+                self.assertTrue(graph.is_edge(u, v))
+                self.assertFalse(graph.is_edge(v, s))
+                self.assertFalse(graph.is_edge(a, v))
+                self.assertFalse(graph.is_edge(s, t))
+                self.assertFalse(graph.is_edge(t, s))
+
+            self.tearDown()
 
 if __name__ == '__main__':
     unittest.main()
