@@ -33,5 +33,12 @@ class AdjListGraph:
                     return False
         return False
 
-    def remove_edge(self):
-        pass
+    def remove_edge(self, v, u):
+        if self.is_edge(v, u):
+            try:
+                v.adjacents.remove(u)
+                u.adjacents.remove(v)
+            except ValueError:
+                raise Exception("Shouldn't happen when removing existing edge")
+            return True
+        return False
