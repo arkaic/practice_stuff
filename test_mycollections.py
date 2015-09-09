@@ -1,4 +1,5 @@
-import unittest, mycollections, random
+import unittest, random
+from datastructs import mycollections
 
 class TestHashTable(unittest.TestCase):
 

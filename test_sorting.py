@@ -1,5 +1,6 @@
-import unittest, sorting, random
+import unittest, random
 from  unittest import TestCase
+from datastructs import sorting
 
 class TestQuicksort(TestCase):
 

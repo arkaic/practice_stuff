@@ -1,4 +1,5 @@
-import unittest, graphs, random
+import unittest, random
+from datastructs import graphs
 
 NUM_VERTICES = 15
 
