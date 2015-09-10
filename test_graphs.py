@@ -185,5 +185,30 @@ class TestAdjListGraph(unittest.TestCase):
 
             self.tearDown()
 
+    def test_dfs(self):
+        for i in range(SAMPLESIZE):
+            if not self.g:
+                self.setUp()
+            ag = self.g
+            n = self.generated_nums
+
+            graphs.traverse(ag, graphs.DFS)
+            for v in ag.vertices:
+                self.assertTrue(v.visited)
+
+            self.tearDown()
+
+    def test_bfs(self):
+        for i in range(SAMPLESIZE):
+            if not self.g:
+                self.setUp()
+
+            graphs.traverse(self.g, graphs.BFS)
+            for v in self.g.vertices:
+                self.assertTrue(v.visited)
+
+            self.tearDown()
+
+
 if __name__ == '__main__':
     unittest.main()

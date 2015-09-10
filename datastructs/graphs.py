@@ -1,8 +1,14 @@
+from random import sample
+import pdb
+
+DFS = 0
+BFS = 1
 
 class Vertex:
     def __init__(self, element=None, adjacents=[]):
         self.element = element
         self.adjacents = adjacents
+        self.visited = False
 
 
 class AdjListGraph:
@@ -42,3 +48,30 @@ class AdjListGraph:
                 raise Exception("Shouldn't happen when removing existing edge")
             return True
         return False
+
+    # def __str__(self):
+    #     s = ""
+    #     for v in self.vertices:
+
+
+
+def traverse(graph, searchtype):
+    if not isinstance(graph, AdjListGraph): return
+
+    def dfs(v):
+        v.visited = True
+        for u in v.adjacents:
+            if not u.visited: dfs(u)
+
+    def bfs(v):
+        q = [v]
+        while q:
+            u = q.pop(0)
+            for a in u.adjacents:
+                if not a.visited: q.append(a)
+            u.visited = True
+
+    if searchtype == DFS:
+        dfs(sample(graph.vertices, 1)[0])
+    elif searchtype == BFS:
+        bfs(sample(graph.vertices, 1)[0])
