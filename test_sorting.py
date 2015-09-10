@@ -3,18 +3,19 @@ from  unittest import TestCase
 from datastructs import sorting
 
 SAMPLESIZE = 100
-RNGRANGE = 1000
+NUM_RANDOM = 15
 
 class TestSorting(TestCase):
 
     def setUp(self):
         self.ready = True
-        self.l = [random.randrange(100) for x in range(RNGRANGE)]
+        self.l = [random.randrange(100) for x in range(NUM_RANDOM)]
         self.d = dict()
         for x in self.l:
             if x not in self.d:
                 self.d[x] = 0
             self.d[x] += 1
+        self.assertEqual(NUM_RANDOM, len(self.l))
 
     def tearDown(self):
         self.ready = False
@@ -64,7 +65,30 @@ class TestSorting(TestCase):
                 self.assertTrue(x in self.d)
                 self.d[x] -= 1
                 self.assertGreaterEqual(self.d[x], 0)
+ 
+            for k, v in self.d.items():
+                self.assertEqual(v, 0)
 
+            self.tearDown()
+
+    def test_selectsort(self):
+        for i in range(SAMPLESIZE):
+            if not self.ready: 
+                self.setUp()
+
+            sorted_l = sorting.selectsort(self.l)
+            self.assertEqual(len(sorted_l), NUM_RANDOM)
+
+            prev = -1
+            for x in sorted_l:
+                self.assertGreaterEqual(x, prev)
+                prev = x
+
+            for x in sorted_l:
+                self.assertTrue(x in self.d)
+                self.d[x] -= 1
+                self.assertGreaterEqual(self.d[x], 0)
+ 
             for k, v in self.d.items():
                 self.assertEqual(v, 0)
 

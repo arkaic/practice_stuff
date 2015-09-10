@@ -1,5 +1,16 @@
 # In-place quicksorting
 
+def selectsort(l):
+    m = []
+    while l:
+        small = None
+        for x in l:
+            if small is None or x < small:
+                small = x
+        m.append(small)
+        l.remove(small)
+    return m
+
 def quicksort_inplace(a, l, r):
     def partition(a, start, end):
         """ Pivot substitutes with the left pointer
