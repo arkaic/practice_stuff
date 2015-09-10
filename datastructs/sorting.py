@@ -1,5 +1,17 @@
 # In-place quicksorting
 
+def insertionsort(l):
+    ptr = 1
+    while ptr < len(l):
+        c = ptr
+        while c > 0 and l[c] < l[c - 1]:
+            tmp = l[c]
+            l[c] = l[c - 1]
+            l[c - 1] = tmp
+            c -= 1
+        ptr += 1
+    return l
+
 def selectsort(l):
     m = []
     while l:

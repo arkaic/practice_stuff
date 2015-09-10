@@ -94,6 +94,29 @@ class TestSorting(TestCase):
 
             self.tearDown()
 
+    def test_insertionsort(self):
+        for i in range(SAMPLESIZE):
+            if not self.ready: 
+                self.setUp()
+
+            sorted_l = sorting.insertionsort(self.l)
+            self.assertEqual(len(sorted_l), NUM_RANDOM)
+
+            prev = -1
+            for x in sorted_l:
+                self.assertGreaterEqual(x, prev)
+                prev = x
+
+            for x in sorted_l:
+                self.assertTrue(x in self.d)
+                self.d[x] -= 1
+                self.assertGreaterEqual(self.d[x], 0)
+ 
+            for k, v in self.d.items():
+                self.assertEqual(v, 0)
+
+            self.tearDown()
+
 
 if __name__ == '__main__':
     unittest.main()
