@@ -3,7 +3,7 @@ from  unittest import TestCase
 from datastructs import sorting
 
 SAMPLESIZE = 100
-NUM_RANDOM = 15
+NUM_RANDOM = 500
 
 class TestSorting(TestCase):
 

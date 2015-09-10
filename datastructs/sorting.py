@@ -7,8 +7,7 @@ def selectsort(l):
         for x in l:
             if small is None or x < small:
                 small = x
-        m.append(small)
-        l.remove(small)
+        m.append(l.pop(l.index(small)))
     return m
 
 def quicksort_inplace(a, l, r):
