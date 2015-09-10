@@ -55,16 +55,17 @@ class TestSorting(TestCase):
                 sorted_l = sorting.selectsort(self.l)
             self.assertEqual(unsorted_count, len(sorted_l))
 
+            # Assert sorted list is in ascending order
             prev = -1
             for x in sorted_l:
                 self.assertGreaterEqual(x, prev)
                 prev = x
 
+            # Assert that the elements were all accounted for from dictionary
             for x in sorted_l:
                 self.assertTrue(x in self.d)
                 self.d[x] -= 1
                 self.assertGreaterEqual(self.d[x], 0)
- 
             for k, v in self.d.items():
                 self.assertEqual(v, 0)
 
