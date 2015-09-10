@@ -1,40 +1,38 @@
 # In-place quicksorting
 
-def _partition(a, start, end):
-    """ Pivot substitutes with the left pointer
-    """
-
-    p = start
-    l = p + 1
-
-    if len(a) < 2:
-        return a
-
-    while l < end:
-        while l < end and a[l] <= a[p]:
-            l += 1
-        while end > l and a[p] < a[end]:
-            end -= 1
-        temp = a[l]
-        a[l] = a[end]
-        a[end] = temp
-
-    if a[l] <= a[p]:
-        swap = l
-    else:
-        swap = l - 1
-    temp = a[swap]
-    a[swap] = a[p]
-    a[p] = temp
-
-    return swap
 
 def quicksort_inplace(a, l, r):
-    if l == r:
-        return a
+    def partition(a, start, end):
+        """ Pivot substitutes with the left pointer
+        """
+        p = start
+        l = p + 1
 
-    pivot = _partition(a, l, r)
+        if len(a) < 2:
+            return a
 
+        while l < end:
+            while l < end and a[l] <= a[p]:
+                l += 1
+            while end > l and a[p] < a[end]:
+                end -= 1
+            temp = a[l]
+            a[l] = a[end]
+            a[end] = temp
+
+        if a[l] <= a[p]:
+            swap = l
+        else:
+            swap = l - 1
+        temp = a[swap]
+        a[swap] = a[p]
+        a[p] = temp
+
+        return swap
+
+    if l == r: return a
+
+    pivot = partition(a, l, r)
     if l < pivot:
         quicksort_inplace(a, l, pivot - 1)
     if pivot < r:
