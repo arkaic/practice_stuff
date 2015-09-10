@@ -1,5 +1,3 @@
-# In-place quicksorting
-
 def insertionsort(l):
     ptr = 1
     while ptr < len(l):
@@ -23,6 +21,7 @@ def selectsort(l):
     return m
 
 def quicksort_inplace(a, l, r):
+    """ Implementation uses the same list """
     def partition(a, start, end):
         """ Pivot substitutes with the left pointer
         """
