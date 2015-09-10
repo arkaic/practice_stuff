@@ -22,9 +22,9 @@ def selectsort(l):
 
 def quicksort_inplace(a, l, r):
     """ Implementation uses the same list """
+
     def partition(a, start, end):
-        """ Pivot substitutes with the left pointer
-        """
+        """ Pivot substitutes with the left pointer """
         p = start
         l = p + 1
 
@@ -40,10 +40,8 @@ def quicksort_inplace(a, l, r):
             a[l] = a[end]
             a[end] = temp
 
-        if a[l] <= a[p]:
-            swap = l
-        else:
-            swap = l - 1
+        if a[l] <= a[p]: swap = l
+        else: swap = l - 1
         temp = a[swap]
         a[swap] = a[p]
         a[p] = temp
