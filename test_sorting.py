@@ -5,6 +5,11 @@ from datastructs import sorting
 SAMPLESIZE = 100
 NUM_RANDOM = 500
 
+QS = 0
+MS = 1
+IS = 2
+SS = 3
+
 class TestSorting(TestCase):
 
     def setUp(self):
@@ -23,84 +28,32 @@ class TestSorting(TestCase):
         self.d = None
 
     def test_qsinplace(self):
-        for i in range(SAMPLESIZE):
-            if not self.ready: self.setUp()
-
-            # Assert that sorted list has same amount of items
-            unsorted_count = len(self.l)
-            sorting.quicksort_inplace(self.l, 0, unsorted_count - 1)
-            self.assertEqual(unsorted_count, len(self.l))
-
-            # Assert each subsequent item >= previous item
-            prev = -1
-            for x in self.l:
-                self.assertGreaterEqual(x, prev)
-                prev = x
-
-            # Assert each sorted item was noted in dictionary, then decrement
-            for x in self.l:
-                self.assertTrue(x in self.d)
-                self.d[x] -= 1
-                self.assertGreaterEqual(self.d[x], 0)
-
-            # Assert dictionary is empty and all zeroed out
-            for k, v in self.d.items():
-                self.assertEqual(v, 0)
-
-            self.tearDown()
+        self._trialtesting(QS)
 
     def test_mergesort(self):
-        for i in range(SAMPLESIZE):
-            if not self.ready: self.setUp()
-
-            sorted_l = sorting.mergesort(self.l)
-            self.assertEqual(len(sorted_l), len(self.l))
-
-            prev = -1
-            for x in sorted_l:
-                self.assertGreaterEqual(x, prev)
-                prev = x
-
-            for x in sorted_l:
-                self.assertTrue(x in self.d)
-                self.d[x] -= 1
-                self.assertGreaterEqual(self.d[x], 0)
- 
-            for k, v in self.d.items():
-                self.assertEqual(v, 0)
-
-            self.tearDown()
+        self._trialtesting(MS)
 
     def test_selectsort(self):
-        for i in range(SAMPLESIZE):
-            if not self.ready: 
-                self.setUp()
-
-            sorted_l = sorting.selectsort(self.l)
-            self.assertEqual(len(sorted_l), NUM_RANDOM)
-
-            prev = -1
-            for x in sorted_l:
-                self.assertGreaterEqual(x, prev)
-                prev = x
-
-            for x in sorted_l:
-                self.assertTrue(x in self.d)
-                self.d[x] -= 1
-                self.assertGreaterEqual(self.d[x], 0)
- 
-            for k, v in self.d.items():
-                self.assertEqual(v, 0)
-
-            self.tearDown()
+        self._trialtesting(SS)
 
     def test_insertionsort(self):
+        self._trialtesting(IS)
+
+    def _trialtesting(self, sort_type):
         for i in range(SAMPLESIZE):
-            if not self.ready: 
+            if not self.ready:
                 self.setUp()
 
-            sorted_l = sorting.insertionsort(self.l)
-            self.assertEqual(len(sorted_l), NUM_RANDOM)
+            unsorted_count = len(self.l)
+            if sort_type == QS:
+                sorted_l = sorting.quicksort_inplace(self.l, 0, unsorted_count - 1)
+            elif sort_type == MS:
+                sorted_l = sorting.mergesort(self.l)
+            elif sort_type == IS:
+                sorted_l = sorting.insertionsort(self.l)
+            elif sort_type == SS:
+                sorted_l = sorting.selectsort(self.l)
+            self.assertEqual(unsorted_count, len(sorted_l))
 
             prev = -1
             for x in sorted_l:
@@ -116,7 +69,6 @@ class TestSorting(TestCase):
                 self.assertEqual(v, 0)
 
             self.tearDown()
-
 
 if __name__ == '__main__':
     unittest.main()
