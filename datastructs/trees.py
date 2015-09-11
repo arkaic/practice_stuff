@@ -21,26 +21,47 @@ class BinarySearchTree:
         return _dfs(self.root)
 
     def insert(self, el):
-        if not self.search(el):
+        def _dfi(node):
+            if el == node.element:
+                return False  # already exists
+            elif el < node.element:
+                if node.left: 
+                    return _dfi(node.left)
+                else: 
+                    node.left = Node(el, parent=node)
+            else:
+                if node.right: 
+                    return _dfi(node.right)
+                else: 
+                    node.right = Node(el, parent=node)
             self.count += 1
-            i = 1
-
-            # Re-search again to find spot (can avoid this if 
-            # search() returns an index)
-            while i < len(self.l) and self.l[i] is not None:
-                if el < self.l[i].element: i *= 2
-                else: i = i * 2 + 1
-
-            # Resize list if insertion point is on new level
-            if i >= len(self.l):
-                new_l = [None] * len(self.l) * 2
-                for index, node in enumerate(self.l):
-                    if node: new_l[index] = node
-                self.l = new_l
-
-            self.l[i] = Node(el, i)
             return True
-        else: return False
+
+        if not self.root:
+            self.root = Node(el)
+            return True
+        return _dfi(self.root)
+
+        # if not self.search(el):
+        #     self.count += 1
+        #     i = 1
+
+        #     # Re-search again to find spot (can avoid this if 
+        #     # search() returns an index)
+        #     while i < len(self.l) and self.l[i] is not None:
+        #         if el < self.l[i].element: i *= 2
+        #         else: i = i * 2 + 1
+
+        #     # Resize list if insertion point is on new level
+        #     if i >= len(self.l):
+        #         new_l = [None] * len(self.l) * 2
+        #         for index, node in enumerate(self.l):
+        #             if node: new_l[index] = node
+        #         self.l = new_l
+
+        #     self.l[i] = Node(el, i)
+        #     return True
+        # else: return False
 
     def delete(self, el):
         if self.count > 0 and self.search(el):
