@@ -13,7 +13,7 @@ class BinarySearchTree:
         self.count = 0
     
     def search(self, el):
-        if len(self.l) < 2: return False
+        if len(self.l) == 1: return False
         i = 1
         while i < len(self.l) and self.l[i] is not None:
             if el < self.l[i].element: i *= 2

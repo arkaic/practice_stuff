@@ -56,10 +56,14 @@ class TestTrees(unittest.TestCase):
              None]
         )
 
+        self.singlebst = trees.BinarySearchTree([None, trees.Node(2, 1)])
+
         self.assertFalse(self.bst is self.wrongbst)
     
     def test_search(self):
-        # todo search an empty tree too
+        self.assertTrue(self.singlebst.search(2))
+        self.assertFalse(self.singlebst.search(4))
+
         self.assertTrue(self.bst.search(8))
         self.assertTrue(self.bst.search(3))
         self.assertTrue(self.bst.search(10))
@@ -72,6 +76,9 @@ class TestTrees(unittest.TestCase):
         self.assertFalse(self.bst.search(55))
 
     def test_insert(self):
+        self.assertFalse(self.singlebst.insert(2))
+        self.assertTrue(self.singlebst.insert(1))
+
         original_list_size = len(self.bst.l)
         self.assertTrue(self.bst.insert(0))
         self.assertEqual(original_list_size, len(self.bst.l))
