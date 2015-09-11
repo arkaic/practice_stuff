@@ -50,14 +50,14 @@ class BinarySearchTree:
 
         if not node.right:
             node.left.parent = node.parent
-            node.left = None
+            node.parent.left = node.left
         elif not node.left:
             node.right.parent = node.parent
-            node.right = None
+            node.parent.right = node.right
         else:
+            # Get smallest node in right subtree
             subtree_node = node.right
-            while subtree_node.left:
-                subtree_node = subtree_node.left
+            while subtree_node.left: subtree_node = subtree_node.left
 
             # connect subtree node's right child to subtree node's parent
             # substitute subtree node in place of the node to be deleted
@@ -66,9 +66,10 @@ class BinarySearchTree:
             subtree_node.parent = node.parent
             subtree_node.left = node.left
             subtree_node.right = node.right
-            node.right = None
-            node.left = None
+
+        node.right = None
+        node.left = None
         node.parent = None
-        
+
         return True
 
