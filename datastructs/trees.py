@@ -42,50 +42,33 @@ class BinarySearchTree:
             return True
         return _dfi(self.root)
 
-        # if not self.search(el):
-        #     self.count += 1
-        #     i = 1
-
-        #     # Re-search again to find spot (can avoid this if 
-        #     # search() returns an index)
-        #     while i < len(self.l) and self.l[i] is not None:
-        #         if el < self.l[i].element: i *= 2
-        #         else: i = i * 2 + 1
-
-        #     # Resize list if insertion point is on new level
-        #     if i >= len(self.l):
-        #         new_l = [None] * len(self.l) * 2
-        #         for index, node in enumerate(self.l):
-        #             if node: new_l[index] = node
-        #         self.l = new_l
-
-        #     self.l[i] = Node(el, i)
-        #     return True
-        # else: return False
-
     def delete(self, el):
-        if self.count > 0 and self.search(el):
-            self.count -= 1
-            i = 1
-            while i < len(self.l) and self.l[i] is not None:
-                if el < self.l[i].element: i *= 2
-                elif el > self.l[i].element: i = i * 2 + 1
-                else: break
+        node = self.search(el)
 
-            if i >= len(self.l) or self.l[i] is None: return False
+        if not node:
+            return False
 
-            deleted_node = self.l[i]
-            self.l[i] = None
+        if not node.right:
+            node.left.parent = node.parent
+            node.left = None
+        elif not node.left:
+            node.right.parent = node.parent
+            node.right = None
+        else:
+            subtree_node = node.right
+            while subtree_node.left:
+                subtree_node = subtree_node.left
 
-            j = i * 2 + 1
-            while True:
-                if j*2 >= len(self.l) or self.l[j*2] is None:
-                    break
-                j *= 2
-
-            if j == i * 2 + 1:
-                pass # TODO 
-
-            # delete node, get smallest child of right subtree and sub in
-            # if smallest child has right children, connect that with its old parent
+            # connect subtree node's right child to subtree node's parent
+            # substitute subtree node in place of the node to be deleted
+            subtree_node.right.parent = subtree_node.parent
+            subtree_node.parent.left = subtree_node.right
+            subtree_node.parent = node.parent
+            subtree_node.left = node.left
+            subtree_node.right = node.right
+            node.right = None
+            node.left = None
+        node.parent = None
+        
+        return True
 
