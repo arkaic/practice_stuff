@@ -70,6 +70,7 @@ class BinarySearchTree:
         node.right = None
         node.left = None
         node.parent = None
+        self.count -= 1
 
         return True
 
