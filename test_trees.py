@@ -11,12 +11,12 @@ class TestTrees(unittest.TestCase):
 
     def setUp(self):
         #       8
-        #      / \
-        #     3   10
-        #    / \    \  
-        #   1   6    14
-        #      / \   /
-        #     4   7 13
+        #     /   \
+        #    3     10
+        #  /  \   /  \  
+        # 1    6      14
+        #/ \  / \    /
+        #     4  7  13
 
         self.bst = trees.BinarySearchTree(
             [None, 
@@ -70,6 +70,28 @@ class TestTrees(unittest.TestCase):
         self.assertTrue(self.bst.search(7))
         self.assertTrue(self.bst.search(13))
         self.assertFalse(self.bst.search(55))
+
+    def test_insert(self):
+        original_list_size = len(self.bst.l)
+        self.assertTrue(self.bst.insert(0))
+        self.assertEqual(original_list_size, len(self.bst.l))
+        self.assertTrue(self.bst.insert(-1))
+        self.assertEqual(original_list_size * 2, len(self.bst.l))
+        self.assertTrue(self.bst.insert(17))
+        self.assertEqual(original_list_size * 2, len(self.bst.l))
+        self.assertFalse(self.bst.insert(0))
+        self.assertFalse(self.bst.insert(-1))
+        self.assertFalse(self.bst.insert(1))
+        self.assertFalse(self.bst.insert(8))
+        self.assertFalse(self.bst.insert(3))
+        self.assertFalse(self.bst.insert(10))
+        self.assertFalse(self.bst.insert(1))
+        self.assertFalse(self.bst.insert(6))
+        self.assertFalse(self.bst.insert(14))
+        self.assertFalse(self.bst.insert(4))
+        self.assertFalse(self.bst.insert(7))
+        self.assertFalse(self.bst.insert(13))
+        self.assertTrue(self.bst.insert(55))
 
     def test_bstproperty(self):
         # todo should make trees that break property
