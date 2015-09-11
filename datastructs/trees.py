@@ -1,25 +1,24 @@
 class Node:
-    def __init__(self, element, index):
+    def __init__(self, element, parent=None, left=None, right=None):
         self.element = element
-        self.index = index
+        self.parent = parent
+        self.left = left
+        self.right = right
 
 
 class BinarySearchTree:
 
-    def __init__(self, l=None):        
-        self.l = l  # or I can make a Node with element=None
-        if not self.l:
-            self.l = [None]
+    def __init__(self, root=None):
+        self.root = root
         self.count = 0
+        if root: self.count += 1
     
     def search(self, el):
-        if len(self.l) == 1: return False
-        i = 1
-        while i < len(self.l) and self.l[i] is not None:
-            if el < self.l[i].element: i *= 2
-            elif el > self.l[i].element: i = i * 2 + 1
-            else: return True
-        return False
+        def _dfs(node):
+            if not node or el == node.element: return node
+            elif el < node.element: return _dfs(node.left)
+            else: return _dfs(node.right)
+        return _dfs(self.root)
 
     def insert(self, el):
         if not self.search(el):
@@ -44,5 +43,28 @@ class BinarySearchTree:
         else: return False
 
     def delete(self, el):
-        if self.count > 0:
+        if self.count > 0 and self.search(el):
             self.count -= 1
+            i = 1
+            while i < len(self.l) and self.l[i] is not None:
+                if el < self.l[i].element: i *= 2
+                elif el > self.l[i].element: i = i * 2 + 1
+                else: break
+
+            if i >= len(self.l) or self.l[i] is None: return False
+
+            deleted_node = self.l[i]
+            self.l[i] = None
+
+            j = i * 2 + 1
+            while True:
+                if j*2 >= len(self.l) or self.l[j*2] is None:
+                    break
+                j *= 2
+
+            if j == i * 2 + 1:
+                pass # TODO 
+
+            # delete node, get smallest child of right subtree and sub in
+            # if smallest child has right children, connect that with its old parent
+
