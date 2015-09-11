@@ -36,6 +36,7 @@ class TestTrees(unittest.TestCase):
              trees.Node(13, 14),
              None]
         )
+        self.bst.count = 9
         
         self.wrongbst = trees.BinarySearchTree(
             [None, 
@@ -55,8 +56,10 @@ class TestTrees(unittest.TestCase):
              trees.Node(9, 14),
              None]
         )
+        self.wrongbst.count = 9
 
         self.singlebst = trees.BinarySearchTree([None, trees.Node(2, 1)])
+        self.singlebst.count = 1
 
         self.assertFalse(self.bst is self.wrongbst)
     
@@ -78,6 +81,7 @@ class TestTrees(unittest.TestCase):
     def test_insert(self):
         self.assertFalse(self.singlebst.insert(2))
         self.assertTrue(self.singlebst.insert(1))
+        self.assertEqual(self.singlebst.count, 2)
 
         original_list_size = len(self.bst.l)
         self.assertTrue(self.bst.insert(0))
@@ -99,9 +103,9 @@ class TestTrees(unittest.TestCase):
         self.assertFalse(self.bst.insert(7))
         self.assertFalse(self.bst.insert(13))
         self.assertTrue(self.bst.insert(55))
+        self.assertEqual(self.bst.count, 13)
 
     def test_bstproperty(self):
-        # todo should make trees that break property
         for i in range(1, len(self.bst.l)):
             node = self.bst.l[i]
             if node:
