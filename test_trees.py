@@ -74,27 +74,27 @@ class TestTrees(unittest.TestCase):
         self.assertEqual(self.bst.search(55), None)
 
     def test_insert(self):
-        self.assertFalse(self.singlebst.insert(8))
-        self.assertTrue(self.singlebst.insert(1))
+        self.assertFalse(self.singlebst.insert(trees.Node(8)))
+        self.assertTrue(self.singlebst.insert(trees.Node(1)))
         self.assertEqual(self.singlebst.count, 2)
 
         self.assertEqual(self.bst.count, 9)
-        self.assertTrue(self.bst.insert(0))
-        self.assertTrue(self.bst.insert(-1))
-        self.assertTrue(self.bst.insert(17))
-        self.assertFalse(self.bst.insert(0))
-        self.assertFalse(self.bst.insert(-1))
-        self.assertFalse(self.bst.insert(1))
-        self.assertFalse(self.bst.insert(8))
-        self.assertFalse(self.bst.insert(3))
-        self.assertFalse(self.bst.insert(10))
-        self.assertFalse(self.bst.insert(1))
-        self.assertFalse(self.bst.insert(6))
-        self.assertFalse(self.bst.insert(14))
-        self.assertFalse(self.bst.insert(4))
-        self.assertFalse(self.bst.insert(7))
-        self.assertFalse(self.bst.insert(13))
-        self.assertTrue(self.bst.insert(55))
+        self.assertTrue(self.bst.insert(trees.Node(0)))
+        self.assertTrue(self.bst.insert(trees.Node(-1)))
+        self.assertTrue(self.bst.insert(trees.Node(17)))
+        self.assertFalse(self.bst.insert(trees.Node(0)))
+        self.assertFalse(self.bst.insert(trees.Node(-1)))
+        self.assertFalse(self.bst.insert(trees.Node(1)))
+        self.assertFalse(self.bst.insert(trees.Node(8)))
+        self.assertFalse(self.bst.insert(trees.Node(3)))
+        self.assertFalse(self.bst.insert(trees.Node(10)))
+        self.assertFalse(self.bst.insert(trees.Node(1)))
+        self.assertFalse(self.bst.insert(trees.Node(6)))
+        self.assertFalse(self.bst.insert(trees.Node(14)))
+        self.assertFalse(self.bst.insert(trees.Node(4)))
+        self.assertFalse(self.bst.insert(trees.Node(7)))
+        self.assertFalse(self.bst.insert(trees.Node(13)))
+        self.assertTrue(self.bst.insert(trees.Node(55)))
         self.assertEqual(self.bst.count, 13)
 
     def test_bstproperty(self):
@@ -125,15 +125,15 @@ class TestTrees(unittest.TestCase):
         _dfs_all(self.bst.root)
 
         # Assert that after each insert and delete, property still holds
-        self.bst.insert(9)
+        self.bst.insert(trees.Node(9))
         _dfs_all(self.bst.root)
         self.bst.delete(9)
         _dfs_all(self.bst.root)
-        self.bst.insert(2)
+        self.bst.insert(trees.Node(2))
         _dfs_all(self.bst.root)
         self.bst.delete(2)
         _dfs_all(self.bst.root)
-        self.bst.insert(5)
+        self.bst.insert(trees.Node(5))
         _dfs_all(self.bst.root)
         self.bst.delete(5)
         _dfs_all(self.bst.root)
@@ -145,11 +145,11 @@ class TestTrees(unittest.TestCase):
         # Delete preexisting then reinsert
         self.bst.delete(8)
         _dfs_all(self.bst.root)
-        self.bst.insert(8)
+        self.bst.insert(trees.Node(8))
         _dfs_all(self.bst.root)
         self.bst.delete(7)
         _dfs_all(self.bst.root)
-        self.bst.insert(7)
+        self.bst.insert(trees.Node(7))
         _dfs_all(self.bst.root)
 
         # self.assertEqual(self.bst.count, 0)  # hack to see if dfs was looking through everything
@@ -158,3 +158,4 @@ class TestTrees(unittest.TestCase):
 
 if __name__ == '__main__':
     unittest.main()
+

@@ -6,12 +6,50 @@ class Node:
         self.right = right
 
 
+class RedBlackNode(Node):
+    """ Red/Black Notes
+    Properties: 
+      1. Black root
+      2. Leaves are None and considered Black, and all have same black depth
+      3. Red's children are black
+
+    Left Rotation: 
+    x=parent, y=right child. y lets go left, pulls its right up and above x and
+    connects to x as its new left, connecting x's older parent to itself. At the 
+    same time, x disconnects y (its right), drops down to connect to y's old left
+
+    left child -> right_rotate
+    right child -> left_rotate
+
+    Affected parties: x, y, x.parent, y.left
+        if x.parent.left is x: x.parent.left = y
+        elif: x.parent.right = y
+        else: exception
+
+        y.parent = x.parent
+
+        y.left.parent = x
+
+        x.parent = y
+        x.right = y.left
+
+        y.left = x
+    """
+
+    def __init__(self, element, color, parent=None, left=None, right=None):
+        super().__init__(element, parent, left, right)
+        self.color = color
+
+
 class BinarySearchTree:
 
     def __init__(self, root=None):
         self.root = root
         self.count = 0
-        if root: self.count += 1
+        self.last_added_node = None
+        if root: 
+            self.count += 1
+            self.last_added_node = root
     
     def search(self, el):
         def _dfs(node):
@@ -20,25 +58,29 @@ class BinarySearchTree:
             else: return _dfs(node.right)
         return _dfs(self.root)
 
-    def insert(self, el):
-        def _dfi(node):
-            if el == node.element:
+    def insert(self, node):
+        def _dfi(m):
+            if node.element == m.element:
                 return False  # already exists
-            elif el < node.element:
-                if node.left: 
-                    return _dfi(node.left)
-                else: 
-                    node.left = Node(el, parent=node)
+            elif node.element < m.element:
+                if m.left: 
+                    return _dfi(m.left)
+                else:
+                    node.parent = m
+                    m.left = node
+                    self.last_added_node = node
             else:
-                if node.right: 
-                    return _dfi(node.right)
-                else: 
-                    node.right = Node(el, parent=node)
+                if m.right:
+                    return _dfi(m.right)
+                else:
+                    node.parent = m
+                    m.right = node
+                    self.last_added_node = node
             self.count += 1
             return True
 
         if not self.root:
-            self.root = Node(el)
+            self.root = node
             return True
         return _dfi(self.root)
 
@@ -86,3 +128,24 @@ class BinarySearchTree:
 
         return True
 
+
+class RedBlackTree(BinarySearchTree):
+
+    def __init__(self, root=None):
+        super().__init__(root)
+
+    def insert(self, node):
+        super().insert(node)
+
+        x = self.last_added_node
+        # Could find another way to retrieve el's node
+        if x is not self.search(el):
+            raise Exception("Not supposed to happen")
+
+        # while x is not self.root and x.parent.color
+
+    def _left_rotate(self):
+        pass
+
+    def _right_rotate(self):
+        pass
