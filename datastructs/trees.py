@@ -138,17 +138,19 @@ class RedBlackTree(BinarySearchTree):
         super().__init__(root)
 
     def insert(self, node):
-        if not hasattr(node.color):
+        if not hasattr(node, 'color'):
             # could make this more robust?
             raise AttributeError("Node provided is not a RedBlackNode")
         super().insert(node)
 
-        x = self.last_added_node
+        x = node
+
         # Could find another way to retrieve el's node
-        if x is not self.search(el):
+        if x is not self.search(node.element):
             raise Exception("Not supposed to happen")
 
         while x is not self.root and x.parent.color == RED:
+            print('x={}, x.parent={}, x.p.p={}'.format(x,x.parent,x.parent.parent))
             if x.parent is self.root:
                 raise Exception("Test exception: root is red and is x's parent in this iteration of rb algorithm")
             if x.parent.parent and x.parent is x.parent.parent.left:
@@ -163,9 +165,9 @@ class RedBlackTree(BinarySearchTree):
                     self._right_rotate(x.parent.parent)  # gives x a red parent
                 else:
                     # uncle exists and color is red
-                    x.parent = BLACK
+                    x.parent.color = BLACK
                     uncle.color = BLACK
-                    x.parent.parent = RED
+                    x.parent.parent.color = RED
                     x = x.parent.parent
             elif x.parent.parent and x.parent is x.parent.parent.right:
                 # above with left/right switched
@@ -180,15 +182,42 @@ class RedBlackTree(BinarySearchTree):
                     self._left_rotate(x.parent.parent)
                 else:
                     # uncle exists and color is red
-                    x.parent = BLACK
+                    x.parent.color = BLACK
                     uncle.color = BLACK
-                    x.parent.parent = RED
+                    x.parent.parent.color = RED
                     x = x.parent.parent
 
         self.root.color = BLACK
 
-    def _left_rotate(self):
-        pass
+    def _left_rotate(self, x):
+        y = x.right
+        if x.parent:
+            if x.parent.left is x: x.parent.left = y
+            elif x.parent.right is x: x.parent.right = y
+            else: raise Exception('Not supposed to happen')
 
-    def _right_rotate(self):
-        pass
+        y.parent = x.parent
+
+        if y.left: y.left.parent = x
+
+        x.parent = y
+        x.right = y.left
+
+        y.left = x
+
+    def _right_rotate(self, x):
+        y = x.left
+        print('x={} y={}'.format(x.element, y.element))
+        if x.parent:
+            if x.parent.right is x: x.parent.right = y
+            elif x.parent.left is x: x.parent.left = y
+            else: raise Exception('Not supposed to happen')
+
+        y.parent = x.parent
+
+        if y.right: y.right.parent = x
+
+        x.parent = y
+        x.left = y.right
+
+        y.right = x

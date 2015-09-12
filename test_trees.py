@@ -78,6 +78,8 @@ class TestTrees(unittest.TestCase):
 
         self.rbt = trees.RedBlackTree(root=rbnodes[1])
         self.rbt.count = 9
+        self.initial_bh_rbt = 2
+        self.measured_bh = None
         # self.wrongrbt = trees.RedBlackTree(root=wrong_rbnodes[1])
         # self.wrongrbt.count = 9
 
@@ -121,6 +123,76 @@ class TestTrees(unittest.TestCase):
         self.assertFalse(self.bst.insert(trees.Node(13)))
         self.assertTrue(self.bst.insert(trees.Node(55)))
         self.assertEqual(self.bst.count, 13)
+
+    def test_rbtproperty(self):
+        """ Root is black, black depth is equal from every leaf,
+        all red parents have black children
+
+        _dfs() to recursively find leaves. Then for each leaf, recursively
+        to root to find black depth
+        """
+        def _dfs(node):
+            def _black_height(n):
+                if n.color == trees.BLACK:
+                    if n.parent: return 1 + _black_height(n.parent)
+                    else: return 1
+                if n.parent: return _black_height(n.parent)
+                else: return 0
+
+            if not node.left and not node.right:
+                # assert black height of leaf
+                bh =  _black_height(node)
+                if self.measured_bh is None: self.measured_bh = bh
+                self.assertEqual(bh, self.measured_bh)
+                print("black height = {}".format(bh))
+            else:
+                if node.color == trees.RED:
+                    if node.left: 
+                        self.assertEqual(node.left.color, trees.BLACK)
+                    if node.right:
+                        self.assertEqual(node.right.color, trees.BLACK)
+                    self.assertFalse(node is self.rbt.root)
+                    self.assertNotEqual(node.parent, None)  # can't be a root
+                    self.assertEqual(node.parent.color, trees.BLACK)
+
+                if node.left: _dfs(node.left)
+                if node.right: _dfs(node.right)
+           
+        # assert root is black
+        self.assertEqual(self.rbt.root.color, trees.BLACK)
+        
+        if self.rbt.root: 
+            _dfs(self.rbt.root)
+
+        # TODO do insertions and deletions and then check the bh
+        self.measured_bh = None
+        self.rbt.insert(trees.RedBlackNode(4, trees.RED))
+        _dfs(self.rbt.root)
+        self.measured_bh = None
+        self.rbt.insert(trees.RedBlackNode(3, trees.RED))
+        _dfs(self.rbt.root)
+        self.measured_bh = None
+        self.rbt.insert(trees.RedBlackNode(13, trees.RED))
+        _dfs(self.rbt.root)
+        self.measured_bh = None
+        self.rbt.insert(trees.RedBlackNode(6, trees.RED))
+        _dfs(self.rbt.root)
+        self.measured_bh = None
+        self.rbt.insert(trees.RedBlackNode(20, trees.RED))
+        _dfs(self.rbt.root)
+        self.measured_bh = None
+        self.rbt.insert(trees.RedBlackNode(30, trees.RED))
+        _dfs(self.rbt.root)
+        self.measured_bh = None
+        self.rbt.insert(trees.RedBlackNode(40, trees.RED))
+        _dfs(self.rbt.root)
+
+        i = 50
+        while self.measured_bh < 10:
+            self.measured_bh = None
+            i += 3
+            self.rbt.insert(trees.RedBlackNode(i, trees.RED))
+            _dfs(self.rbt.root)
 
     def test_bstproperty(self):
         """ All children of a node's left subtree must be less than, and vice versa. """
