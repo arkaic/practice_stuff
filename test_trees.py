@@ -4,22 +4,33 @@ from datastructs import trees
 LEFT_SUBTREE = 0
 RIGHT_SUBTREE = 1
 
+BST = 2
+RBT = 3
+
 ROOTS_LEFT_ANOMALIES = [8]
 ROOTS_RIGHT_ANOMALIES = [3, 10]
 
 class TestTrees(unittest.TestCase):
 
     def setUp(self):
-        def _generate_connected_nodes(els):
+        def _generate_connected_nodes(els, treetype):
             nodes = []
-            for x in els:
-                if x is None: nodes.append(x)
-                else: nodes.append(trees.Node(x))
+            for i, x in enumerate(els):
+                if x is None:
+                    nodes.append(x)
+                else:
+                    if treetype == BST:
+                        nodes.append(trees.Node(x))
+                    elif treetype == RBT:
+                        nodes.append(trees.RedBlackNode(x[0], x[1]))
+
+            # connect them
             for i, node in enumerate(nodes):
                 if node is not None:
                     if i > 1: node.parent = nodes[int(i / 2)]
                     if i * 2 < len(nodes): node.left = nodes[i * 2]
                     if i * 2 + 1 < len(nodes): node.right = nodes[i * 2 + 1]
+
             return nodes
 
 
@@ -43,10 +54,19 @@ class TestTrees(unittest.TestCase):
                      None, None, 2, 9, None, None, 9, None]
         single_el = [None, 8]
 
+        B, R = trees.BLACK, trees.RED
+        rb_els = [None, (11,B),
+                  (2, R), (14, B),
+                  (1, B), (7, B), None, (15, R),
+                  None, None, (5, R), (8, R), None, None, None, None]
+
         # Generate a linked tree of Node objects
-        nodes = _generate_connected_nodes(els)
-        wrong_nodes = _generate_connected_nodes(wrong_els)
-        single_node = _generate_connected_nodes(single_el)
+        nodes = _generate_connected_nodes(els, BST)
+        wrong_nodes = _generate_connected_nodes(wrong_els, BST)
+        single_node = _generate_connected_nodes(single_el, BST)
+
+        rbnodes = _generate_connected_nodes(rb_els, RBT)
+        # wrong_rbnodes = _generate_connected_nodes(wrong_els, RBT)
 
         # Create the bsts (wrongbst breaks the property of bsts)
         self.bst = trees.BinarySearchTree(root=nodes[1])
@@ -55,6 +75,11 @@ class TestTrees(unittest.TestCase):
         self.wrongbst.count = 9
         self.singlebst = trees.BinarySearchTree(root=single_node[1])
         self.singlebst.count = 1
+
+        self.rbt = trees.RedBlackTree(root=rbnodes[1])
+        self.rbt.count = 9
+        # self.wrongrbt = trees.RedBlackTree(root=wrong_rbnodes[1])
+        # self.wrongrbt.count = 9
 
     
     def test_search(self):
