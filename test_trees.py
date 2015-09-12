@@ -1,8 +1,8 @@
 import unittest, random
 from datastructs import trees
 
-LESSTHAN = 0
-GREATERTHAN = 1
+LEFT_SUBTREE = 0
+RIGHT_SUBTREE = 1
 
 ROOTS_LEFT_ANOMALIES = [8]
 ROOTS_RIGHT_ANOMALIES = [3, 10]
@@ -10,6 +10,19 @@ ROOTS_RIGHT_ANOMALIES = [3, 10]
 class TestTrees(unittest.TestCase):
 
     def setUp(self):
+        def _generate_connected_nodes(els):
+            nodes = []
+            for x in els:
+                if x is None: nodes.append(x)
+                else: nodes.append(trees.Node(x))
+            for i, node in enumerate(nodes):
+                if node is not None:
+                    if i > 1: node.parent = nodes[int(i / 2)]
+                    if i * 2 < len(nodes): node.left = nodes[i * 2]
+                    if i * 2 + 1 < len(nodes): node.right = nodes[i * 2 + 1]
+            return nodes
+
+
         #       8
         #     /   \
         #    3     10
@@ -17,6 +30,7 @@ class TestTrees(unittest.TestCase):
         # 1    6      14
         #/ \  / \    /
         #     4  7  13
+        #    [2][9] [9]
 
         # Test case elements. 
         els = [None, 8, 
@@ -30,9 +44,9 @@ class TestTrees(unittest.TestCase):
         single_el = [None, 8]
 
         # Generate a linked tree of Node objects
-        nodes = self._generate_connected_nodes(els)
-        wrong_nodes = self._generate_connected_nodes(wrong_els)
-        single_node = self._generate_connected_nodes(single_el)
+        nodes = _generate_connected_nodes(els)
+        wrong_nodes = _generate_connected_nodes(wrong_els)
+        single_node = _generate_connected_nodes(single_el)
 
         # Create the bsts (wrongbst breaks the property of bsts)
         self.bst = trees.BinarySearchTree(root=nodes[1])
@@ -44,6 +58,7 @@ class TestTrees(unittest.TestCase):
 
     
     def test_search(self):
+        # test that roots can also be searched for in a single element bst
         self.assertEqual(self.singlebst.search(8).element, 8)
         self.assertEqual(self.singlebst.search(4), None)
 
@@ -58,7 +73,7 @@ class TestTrees(unittest.TestCase):
         self.assertEqual(self.bst.search(13).element, 13)
         self.assertEqual(self.bst.search(55), None)
 
-    # def test_insert(self):
+    def test_insert(self):
         self.assertFalse(self.singlebst.insert(8))
         self.assertTrue(self.singlebst.insert(1))
         self.assertEqual(self.singlebst.count, 2)
@@ -82,54 +97,64 @@ class TestTrees(unittest.TestCase):
         self.assertTrue(self.bst.insert(55))
         self.assertEqual(self.bst.count, 13)
 
-    # def test_bstproperty(self):
-    #     for i in range(1, len(self.bst.l)):
-    #         node = self.bst.l[i]
-    #         if node:
-    #             left, right = i * 2, i * 2 + 1
-    #             self.assertTrue(self._check_subtree(left, node, LESSTHAN, self.bst))
-    #             self.assertTrue(self._check_subtree(right, node, GREATERTHAN, self.bst))
+    def test_bstproperty(self):
+        """ All children of a node's left subtree must be less than, and vice versa. """
 
-    #     for i in range(1, len(self.wrongbst.l)):
-    #         node = self.wrongbst.l[i]
-    #         if node:
-    #             left, right = i * 2, i * 2 + 1
-    #             if node.element in ROOTS_LEFT_ANOMALIES:
-    #                 self.assertFalse(self._check_subtree(left, node, LESSTHAN, self.wrongbst))
-    #             else:
-    #                 self.assertTrue(self._check_subtree(left, node, LESSTHAN, self.wrongbst))
+        def _dfs_all(node):
+            """dfs_all() will recursively go through all nodes.
+            dfs_subtree() will recursively go through all nodes of each dfs_all's node's
+            subtree and check that every number holds true to the bst property.
+            """
+            def _dfs_subtree(subtreenode, el, subtree):
+                if subtreenode:
+                    if subtree == LEFT_SUBTREE:
+                        self.assertLess(subtreenode.element, el)
+                    elif subtree == RIGHT_SUBTREE:
+                        self.assertLess(el, subtreenode.element)
+                    _dfs_subtree(subtreenode.left, el, subtree)
+                    _dfs_subtree(subtreenode.right, el, subtree)
 
-    #             if node.element in ROOTS_RIGHT_ANOMALIES:
-    #                 self.assertFalse(self._check_subtree(right, node, GREATERTHAN, self.wrongbst))
-    #             else:
-    #                 self.assertTrue(self._check_subtree(right, node, GREATERTHAN, self.wrongbst))
+            if node:
+                _dfs_subtree(node.left, node.element, LEFT_SUBTREE)
+                _dfs_subtree(node.right, node.element, RIGHT_SUBTREE)
+                _dfs_all(node.left)
+                _dfs_all(node.right)
+                # self.bst.count -= 1
 
-    # def _check_subtree(self, desc, root, comparetype, tree):
-    #     if desc < len(tree.l) and tree.l[desc] is not None:
-    #         if comparetype == LESSTHAN and tree.l[desc].element >= root.element:
-    #             return False
-    #         elif comparetype == GREATERTHAN and tree.l[desc].element <= root.element:
-    #             return False
 
-    #         left, right = desc * 2, desc * 2 + 1
-    #         if not self._check_subtree(left, root, comparetype, tree):
-    #             return False
-    #         if not self._check_subtree(right, root, comparetype, tree):
-    #             return False
+        _dfs_all(self.bst.root)
 
-    #     return True
+        # Assert that after each insert and delete, property still holds
+        self.bst.insert(9)
+        _dfs_all(self.bst.root)
+        self.bst.delete(9)
+        _dfs_all(self.bst.root)
+        self.bst.insert(2)
+        _dfs_all(self.bst.root)
+        self.bst.delete(2)
+        _dfs_all(self.bst.root)
+        self.bst.insert(5)
+        _dfs_all(self.bst.root)
+        self.bst.delete(5)
+        _dfs_all(self.bst.root)
 
-    def _generate_connected_nodes(self, els):
-        nodes = []
-        for x in els:
-            if x is None: nodes.append(x)
-            else: nodes.append(trees.Node(x))
-        for i, node in enumerate(nodes):
-            if node is not None:
-                if i > 1: node.parent = nodes[int(i / 2)]
-                if i * 2 < len(nodes): node.left = nodes[i * 2]
-                if i * 2 + 1 < len(nodes): node.right = nodes[i * 2 + 1]
-        return nodes
+        # Delete non existent element
+        self.bst.delete(99)
+        _dfs_all(self.bst.root)
+
+        # Delete preexisting then reinsert
+        self.bst.delete(8)
+        _dfs_all(self.bst.root)
+        self.bst.insert(8)
+        _dfs_all(self.bst.root)
+        self.bst.delete(7)
+        _dfs_all(self.bst.root)
+        self.bst.insert(7)
+        _dfs_all(self.bst.root)
+
+        # self.assertEqual(self.bst.count, 0)  # hack to see if dfs was looking through everything
+        # _dfs_all(self.wrongbst.root)   # this will assert false
+
 
 if __name__ == '__main__':
     unittest.main()
