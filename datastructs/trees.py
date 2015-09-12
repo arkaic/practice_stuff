@@ -1,3 +1,6 @@
+BLACK = 0
+RED = 1
+
 class Node:
     def __init__(self, element, parent=None, left=None, right=None):
         self.element = element
@@ -135,6 +138,9 @@ class RedBlackTree(BinarySearchTree):
         super().__init__(root)
 
     def insert(self, node):
+        if not hasattr(node.color):
+            # could make this more robust?
+            raise AttributeError("Node provided is not a RedBlackNode")
         super().insert(node)
 
         x = self.last_added_node
@@ -142,7 +148,44 @@ class RedBlackTree(BinarySearchTree):
         if x is not self.search(el):
             raise Exception("Not supposed to happen")
 
-        # while x is not self.root and x.parent.color
+        while x is not self.root and x.parent.color == RED:
+            if x.parent is self.root:
+                raise Exception("Test exception: root is red and is x's parent in this iteration of rb algorithm")
+            if x.parent.parent and x.parent is x.parent.parent.left:
+                uncle = x.parent.parent.right
+                if not uncle or uncle.color == BLACK:
+                    # uncle may be NIL or he is black
+                    if x is x.parent.right:
+                        x = x.parent
+                        self._left_rotate(x)
+                    x.parent.color = BLACK
+                    x.parent.parent.color = RED
+                    self._right_rotate(x.parent.parent)  # gives x a red parent
+                else:
+                    # uncle exists and color is red
+                    x.parent = BLACK
+                    uncle.color = BLACK
+                    x.parent.parent = RED
+                    x = x.parent.parent
+            elif x.parent.parent and x.parent is x.parent.parent.right:
+                # above with left/right switched
+                uncle = x.parent.parent.left
+                if not uncle or uncle.color == BLACK:
+                    # uncle may be NIL or he is black
+                    if x is x.parent.left:
+                        x = x.parent
+                        self._right_rotate(x)
+                    x.parent.color = BLACK
+                    x.parent.parent.color = RED
+                    self._left_rotate(x.parent.parent)
+                else:
+                    # uncle exists and color is red
+                    x.parent = BLACK
+                    uncle.color = BLACK
+                    x.parent.parent = RED
+                    x = x.parent.parent
+
+        self.root.color = BLACK
 
     def _left_rotate(self):
         pass
