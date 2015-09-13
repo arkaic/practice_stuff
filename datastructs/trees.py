@@ -23,22 +23,7 @@ class RedBlackNode(Node):
 
     left child -> right_rotate
     right child -> left_rotate
-
-    Affected parties: x, y, x.parent, y.left
-        if x.parent.left is x: x.parent.left = y
-        elif: x.parent.right = y
-        else: exception
-
-        y.parent = x.parent
-
-        y.left.parent = x
-
-        x.parent = y
-        x.right = y.left
-
-        y.left = x
     """
-
     def __init__(self, element, color, parent=None, left=None, right=None):
         super().__init__(element, parent, left, right)
         self.color = color
@@ -88,6 +73,12 @@ class BinarySearchTree:
         return _dfi(self.root)
 
     def delete(self, el):
+        """ 
+        Case 1: Node is leaf
+        Case 2: Node has left child only
+        Case 3: Node has right child only
+        Case 4: Node has both children
+        """
         node = self.search(el)
 
         if not node:
@@ -95,21 +86,21 @@ class BinarySearchTree:
 
         if not node.right:
             if not node.left:
-                # leaf node
+                # Case 1
                 if node.element > node.parent.element:
                     node.parent.right = None
                 else:
                     node.parent.left = None
             else:
-                # node just has left child
+                # Case 2
                 node.left.parent = node.parent
                 node.parent.left = node.left
         elif not node.left:
-            # node has just right child
+            # Case 3
             node.right.parent = node.parent
             node.parent.right = node.right
         else:
-            # node has both children
+            # Case 4 
             # Get smallest node in right subtree
             subtree_node = node.right
             while subtree_node.left:
@@ -142,17 +133,17 @@ class RedBlackTree(BinarySearchTree):
             # could make this more robust?
             raise AttributeError("Node provided is not a RedBlackNode")
         super().insert(node)
+        self._balance(node)
 
-        x = node
-
-        # Could find another way to retrieve el's node
-        if x is not self.search(node.element):
+    def _balance(self, x):
+        # Could find another way to retrieve element's node
+        if x is not self.search(x.element):
             raise Exception("Not supposed to happen")
 
         while x is not self.root and x.parent.color == RED:
-            print('x={}, x.parent={}, x.p.p={}'.format(x,x.parent,x.parent.parent))
             if x.parent is self.root:
                 raise Exception("Test exception: root is red and is x's parent in this iteration of rb algorithm")
+
             if x.parent.parent and x.parent is x.parent.parent.left:
                 uncle = x.parent.parent.right
                 if not uncle or uncle.color == BLACK:
@@ -207,7 +198,6 @@ class RedBlackTree(BinarySearchTree):
 
     def _right_rotate(self, x):
         y = x.left
-        print('x={} y={}'.format(x.element, y.element))
         if x.parent:
             if x.parent.right is x: x.parent.right = y
             elif x.parent.left is x: x.parent.left = y
