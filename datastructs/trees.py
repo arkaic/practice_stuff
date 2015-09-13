@@ -1,3 +1,5 @@
+import math
+
 BLACK = 0
 RED = 1
 
@@ -126,6 +128,26 @@ class BinarySearchTree:
 
         return (node, replacement)
 
+    def __str__(self):
+        c = 0
+        level = 1
+        q = [self.root]
+        s = ""
+        while q:
+            n = q.pop(0)
+            c += 1
+            if n: 
+                el_str = n.element
+                q.append(n.left)
+                q.append(n.right)
+            else:
+                el_str = 'N'
+            if c >= math.pow(2, level):
+                level += 1
+                s += "\n{}, ".format(el_str)
+            else:
+                s += "{}, ".format(el_str)
+        return s
 
 class RedBlackTree(BinarySearchTree):
 
@@ -158,7 +180,8 @@ class RedBlackTree(BinarySearchTree):
         if not nodes: return None
 
         deleted, replacement = nodes
-
+        replacement.color = RED
+        self._balance(replacement)
 
 
 
