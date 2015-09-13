@@ -82,8 +82,9 @@ class BinarySearchTree:
         node = self.search(el)
 
         if not node:
-            return False
+            return None
 
+        replacement = None
         if not node.right:
             if not node.left:
                 # Case 1
@@ -95,10 +96,12 @@ class BinarySearchTree:
                 # Case 2
                 node.left.parent = node.parent
                 node.parent.left = node.left
+                replacement = node.left
         elif not node.left:
             # Case 3
             node.right.parent = node.parent
             node.parent.right = node.right
+            replacement = node.right
         else:
             # Case 4 
             # Get smallest node in right subtree
@@ -114,13 +117,14 @@ class BinarySearchTree:
             subtree_node.parent = node.parent
             subtree_node.left = node.left
             subtree_node.right = node.right
+            replacement = subtree_node
 
         node.right = None
         node.left = None
         node.parent = None
         self.count -= 1
 
-        return True
+        return (node, replacement)
 
 
 class RedBlackTree(BinarySearchTree):
@@ -128,12 +132,18 @@ class RedBlackTree(BinarySearchTree):
     def __init__(self, root=None):
         super().__init__(root)
 
+    # @Override
     def insert(self, node):
         if not hasattr(node, 'color'):
             # could make this more robust?
             raise AttributeError("Node provided is not a RedBlackNode")
         super().insert(node)
         self._balance(node)
+
+    # @Override 
+    def delete(self, el):
+        super().delete(el)
+
 
     def _balance(self, x):
         # Could find another way to retrieve element's node
