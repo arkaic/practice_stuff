@@ -137,12 +137,29 @@ class RedBlackTree(BinarySearchTree):
         if not hasattr(node, 'color'):
             # could make this more robust?
             raise AttributeError("Node provided is not a RedBlackNode")
-        super().insert(node)
-        self._balance(node)
+        if super().insert(node):
+            self._balance(node)
 
     # @Override 
     def delete(self, el):
-        super().delete(el)
+        """ 
+        Case 1: deleted node is leaf
+        Case 2: deleted node has only left
+        Case 3: deleted node has only right
+        Balance bh starting at the substituted node if deleted node is black.
+
+        Case 4: deleted node has both children
+        if red deleted and subbed with red, nothing needed
+        if red deleted and subbed with black, balance at subtree (red property)
+        if black deleted and subbed with black, balance starting at the subtree
+        if black deleted and subbed with red, balance at substituted node
+        """
+        nodes = super().delete(el)
+        if not nodes: return None
+
+        deleted, replacement = nodes
+
+
 
 
     def _balance(self, x):
@@ -150,7 +167,8 @@ class RedBlackTree(BinarySearchTree):
         if x is not self.search(x.element):
             raise Exception("Not supposed to happen")
 
-        while x is not self.root and x.parent.color == RED:
+        # Assuming x is red
+        while x is not self.root and x.color == RED and x.parent.color == RED:
             if x.parent is self.root:
                 raise Exception("Test exception: root is red and is x's parent in this iteration of rb algorithm")
 
