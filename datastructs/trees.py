@@ -129,14 +129,14 @@ class BinarySearchTree:
         return (node, replacement)
 
     def __str__(self):
-        c = 0  # counts NILs too   
+        c = 0 
         level = 1
         q = [self.root]
         s = "P ---> N(L, R)\n"
         while q:
             n = q.pop(0)
-            c += 1
             if n:
+                c += 1
                 if n.parent:
                     el_str = 'P={} ---> {}('.format(n.parent.element, n.element)
                 else:
@@ -150,6 +150,7 @@ class BinarySearchTree:
             else:
                 el_str = 'NIL'
             s += el_str + '\n'
+        s += '\nNode Count sans NILs = {}'.format(c)
         return s
 
 
@@ -196,10 +197,11 @@ class RedBlackTree(BinarySearchTree):
 
         # Assuming x is red
         while x is not self.root and x.color == RED and x.parent.color == RED:
-            if x.parent is self.root:
+            if not x.parent.parent:
                 raise Exception("Test exception: root is red and is x's parent in this iteration of rb algorithm")
 
-            if x.parent.parent and x.parent is x.parent.parent.left:
+            # x.parent's color is RED, so it will never be a root. Thus, x has a grandparent
+            if x.parent is x.parent.parent.left:
                 uncle = x.parent.parent.right
                 if not uncle or uncle.color == BLACK:
                     # uncle may be NIL or he is black
@@ -215,7 +217,9 @@ class RedBlackTree(BinarySearchTree):
                     uncle.color = BLACK
                     x.parent.parent.color = RED
                     x = x.parent.parent
-            elif x.parent.parent and x.parent is x.parent.parent.right:
+                    if x.parent is None:
+                        self.root = x
+            elif x.parent is x.parent.parent.right:
                 # above with left/right switched
                 uncle = x.parent.parent.left
                 if not uncle or uncle.color == BLACK:
@@ -232,6 +236,8 @@ class RedBlackTree(BinarySearchTree):
                     uncle.color = BLACK
                     x.parent.parent.color = RED
                     x = x.parent.parent
+                    if x.parent is None:
+                        self.root = x
 
         self.root.color = BLACK
 
@@ -241,6 +247,8 @@ class RedBlackTree(BinarySearchTree):
             if x.parent.left is x: x.parent.left = y
             elif x.parent.right is x: x.parent.right = y
             else: raise Exception('Not supposed to happen')
+        else:
+            self.root = y
 
         y.parent = x.parent
 
@@ -257,6 +265,8 @@ class RedBlackTree(BinarySearchTree):
             if x.parent.right is x: x.parent.right = y
             elif x.parent.left is x: x.parent.left = y
             else: raise Exception('Not supposed to happen')
+        else:
+            self.root = y
 
         y.parent = x.parent
 
