@@ -89,20 +89,30 @@ class BinarySearchTree:
         replacement = None
         if not node.right:
             if not node.left:
-                # Case 1
+                # Case 1: node is leaf
                 if node.element > node.parent.element:
                     node.parent.right = None
                 else:
                     node.parent.left = None
             else:
-                # Case 2
+                # Case 2: node has left only
                 node.left.parent = node.parent
-                node.parent.left = node.left
+                if node is node.parent.right:
+                    node.parent.right = node.left
+                elif node is node.parent.left:
+                    node.parent.left = node.left
+                else:
+                    raise Exception("shouldn't happen")
                 replacement = node.left
         elif not node.left:
-            # Case 3
+            # Case 3: node has right only
             node.right.parent = node.parent
-            node.parent.right = node.right
+            if node is node.parent.right:
+                node.parent.right = node.right
+            elif node is node.parent.left:
+                node.parent.left = node.right
+            else:
+                raise Exception("shouldn't happen")
             replacement = node.right
         else:
             # Case 4 
@@ -111,15 +121,24 @@ class BinarySearchTree:
             while subtree_node.left:
                 subtree_node = subtree_node.left
 
-            # connect subtree node's right child to subtree node's parent
-            # substitute subtree node in place of the node to be deleted
-            if subtree_node.right:
-                subtree_node.right.parent = subtree_node.parent
-                subtree_node.parent.left = subtree_node.right
-            subtree_node.parent = node.parent
-            subtree_node.left = node.left
-            subtree_node.right = node.right
+            if subtree_node == node.right:
+                # just have subtree node take node's place
+                subtree_node.parent = node.parent
+                subtree_node.left = node.left
+                node.left.parent = subtree_node
+            else:
+                # connect subtree node's right child to subtree node's parent
+                # substitute subtree node in place of the node to be deleted
+                if subtree_node.right:
+                    subtree_node.right.parent = subtree_node.parent
+                    subtree_node.parent.left = subtree_node.right
+                subtree_node.parent = node.parent
+                subtree_node.left = node.left
+                subtree_node.right = node.right
+
             replacement = subtree_node
+            if subtree_node.parent is None:
+                self.root = subtree_node
 
         node.right = None
         node.left = None
