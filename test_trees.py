@@ -1,4 +1,4 @@
-import unittest, random
+import unittest, random, math
 from datastructs import trees
 
 LEFT_SUBTREE = 0
@@ -9,6 +9,8 @@ RBT = 3
 
 ROOTS_LEFT_ANOMALIES = [8]
 ROOTS_RIGHT_ANOMALIES = [3, 10]
+
+SAMPLE_SIZE = 15
 
 class TestTrees(unittest.TestCase):
 
@@ -44,15 +46,15 @@ class TestTrees(unittest.TestCase):
         #    [2][9] [9]
 
         # Test case elements. 
-        els = [None, 8, 
+        self.bst_elements = [None, 8, 
                3, 10, 
                1, 6, None, 14, 
                None, None, 4, 7, None, None, 13, None]
-        wrong_els = [None, 8, 
+        self.wrongbst_elements = [None, 8, 
                      3, 10, 
                      1, 6, None, 14, 
                      None, None, 2, 9, None, None, 9, None]
-        single_el = [None, 8]
+        self.singlebst_element = [None, 8]
 
         B, R = trees.BLACK, trees.RED
         rb_els = [None, (11,B),
@@ -61,12 +63,12 @@ class TestTrees(unittest.TestCase):
                   None, None, (5, R), (8, R), None, None, None, None]
 
         # Generate a linked tree of Node objects
-        nodes = _generate_connected_nodes(els, BST)
-        wrong_nodes = _generate_connected_nodes(wrong_els, BST)
-        single_node = _generate_connected_nodes(single_el, BST)
+        nodes = _generate_connected_nodes(self.bst_elements, BST)
+        wrong_nodes = _generate_connected_nodes(self.wrongbst_elements, BST)
+        single_node = _generate_connected_nodes(self.singlebst_element, BST)
 
         rbnodes = _generate_connected_nodes(rb_els, RBT)
-        # wrong_rbnodes = _generate_connected_nodes(wrong_els, RBT)
+        # wrong_rbnodes = _generate_connected_nodes(self.wrongbst_elements, RBT)
 
         # Create the bsts (wrongbst breaks the property of bsts)
         self.bst = trees.BinarySearchTree(root=nodes[1])
@@ -83,22 +85,24 @@ class TestTrees(unittest.TestCase):
         # self.wrongrbt = trees.RedBlackTree(root=wrong_rbnodes[1])
         # self.wrongrbt.count = 9
 
+    def test_bstinsert(self):
+        print("\n\n\nStart Bst\n\n{}".format(self.bst))
+        elements_toinsert = [5]
+        for e in elements_toinsert:
+            n = trees.Node(5)
+            self.bst.insert(n)
+            print("Inserting {} into bst\n{}".format(e, self.bst))
+        print("\n\n")
+
     
     def test_search(self):
         # test that roots can also be searched for in a single element bst
         self.assertEqual(self.singlebst.search(8).element, 8)
         self.assertEqual(self.singlebst.search(4), None)
 
-        self.assertEqual(self.bst.search(8).element, 8)
-        self.assertEqual(self.bst.search(3).element, 3)
-        self.assertEqual(self.bst.search(10).element, 10)
-        self.assertEqual(self.bst.search(1).element, 1)
-        self.assertEqual(self.bst.search(6).element, 6)
-        self.assertEqual(self.bst.search(14).element, 14)
-        self.assertEqual(self.bst.search(4).element, 4)
-        self.assertEqual(self.bst.search(7).element, 7)
-        self.assertEqual(self.bst.search(13).element, 13)
-        self.assertEqual(self.bst.search(55), None)
+        for e in self.bst_elements:
+            if e is not None: 
+                self.assertEqual(self.bst.search(e).element, e)
 
     def test_insert(self):
         self.assertFalse(self.singlebst.insert(trees.Node(8)))
@@ -109,19 +113,14 @@ class TestTrees(unittest.TestCase):
         self.assertTrue(self.bst.insert(trees.Node(0)))
         self.assertTrue(self.bst.insert(trees.Node(-1)))
         self.assertTrue(self.bst.insert(trees.Node(17)))
+        self.assertTrue(self.bst.insert(trees.Node(55)))
         self.assertFalse(self.bst.insert(trees.Node(0)))
         self.assertFalse(self.bst.insert(trees.Node(-1)))
-        self.assertFalse(self.bst.insert(trees.Node(1)))
-        self.assertFalse(self.bst.insert(trees.Node(8)))
-        self.assertFalse(self.bst.insert(trees.Node(3)))
-        self.assertFalse(self.bst.insert(trees.Node(10)))
-        self.assertFalse(self.bst.insert(trees.Node(1)))
-        self.assertFalse(self.bst.insert(trees.Node(6)))
-        self.assertFalse(self.bst.insert(trees.Node(14)))
-        self.assertFalse(self.bst.insert(trees.Node(4)))
-        self.assertFalse(self.bst.insert(trees.Node(7)))
-        self.assertFalse(self.bst.insert(trees.Node(13)))
-        self.assertTrue(self.bst.insert(trees.Node(55)))
+
+        for e in self.bst_elements:
+            if e is not None:
+                self.assertFalse(self.bst.insert(trees.Node(e)))
+
         self.assertEqual(self.bst.count, 13)
 
     def test_bstproperty(self):
@@ -142,6 +141,8 @@ class TestTrees(unittest.TestCase):
                     _dfs_subtree(subtreenode.right, el, subtree)
 
             if node:
+                if node.left:
+                    print("stn={}, topel={}".format(node.left.element, node.element))
                 _dfs_subtree(node.left, node.element, LEFT_SUBTREE)
                 _dfs_subtree(node.right, node.element, RIGHT_SUBTREE)
                 _dfs_all(node.left)
@@ -152,60 +153,27 @@ class TestTrees(unittest.TestCase):
         _dfs_all(self.bst.root)
 
         # Assert that after each insert and delete, property still holds
-        self.bst.insert(trees.Node(9))
-        _dfs_all(self.bst.root)
-        self.bst.delete(9)
-        _dfs_all(self.bst.root)
-        self.bst.insert(trees.Node(2))
-        _dfs_all(self.bst.root)
-        self.bst.delete(2)
-        _dfs_all(self.bst.root)
-        self.bst.insert(trees.Node(5))
-        _dfs_all(self.bst.root)
-        self.bst.delete(5)
-        _dfs_all(self.bst.root)
+        els = [9, 2, 5]
+        for e in els:
+            self.bst.insert(trees.Node(e))
+            _dfs_all(self.bst.root)
+            self.bst.delete(e)
+            _dfs_all(self.bst.root)
 
         # Delete non existent element
         self.bst.delete(99)
         _dfs_all(self.bst.root)
 
         # Delete preexisting then reinsert
-        a = self.bst.delete(8)
-        if a:
-            self.assertEqual(a[0].parent, None)
-            self.assertEqual(a[0].left, None)
-            self.assertEqual(a[0].right, None)
-        _dfs_all(self.bst.root)
-        self.bst.insert(trees.Node(8))
-        _dfs_all(self.bst.root)
-        self.bst.delete(7)
-        _dfs_all(self.bst.root)
-        self.bst.insert(trees.Node(7))
-        _dfs_all(self.bst.root)
-        a = self.bst.delete(14)
-        if a:
-            self.assertEqual(a[0].parent, None)
-            self.assertEqual(a[0].left, None)
-            self.assertEqual(a[0].right, None)
-        _dfs_all(self.bst.root)
-        self.bst.insert(trees.Node(14))
-        _dfs_all(self.bst.root)
-        a = self.bst.delete(1)
-        if a:
-            self.assertEqual(a[0].parent, None)
-            self.assertEqual(a[0].left, None)
-            self.assertEqual(a[0].right, None)
-        _dfs_all(self.bst.root)
-        self.bst.insert(trees.Node(1))
-        _dfs_all(self.bst.root)
-        a = self.bst.delete(4)
-        if a:
-            self.assertEqual(a[0].parent, None)
-            self.assertEqual(a[0].left, None)
-            self.assertEqual(a[0].right, None)
-        _dfs_all(self.bst.root)
-        self.bst.insert(trees.Node(4))
-        _dfs_all(self.bst.root)
+        els = [8, 7, 14, 1, 4]
+        for e in els:
+            print(self.bst)
+            print("deleting {}".format(e))
+            self.bst.delete(e)
+            print(self.bst)
+            _dfs_all(self.bst.root)
+            self.bst.insert(trees.Node(e))
+            _dfs_all(self.bst.root)
 
         # self.assertEqual(self.bst.count, 0)  # hack to see if dfs was looking through everything
         # _dfs_all(self.wrongbst.root)   # this will assert false
@@ -220,17 +188,22 @@ class TestTrees(unittest.TestCase):
         def _dfs_testproperty(node):
             def _black_height(n):
                 if n.color == trees.BLACK:
-                    if n.parent: return 1 + _black_height(n.parent)
-                    else: return 1
+                    if n.parent: 
+                        # print('n={} p={}'.format(n.element, n.parent.element))
+                        return 1 + _black_height(n.parent)
+                    else: 
+                        return 1
                 if n.parent: return _black_height(n.parent)
                 else: return 0
 
             if not node.left and not node.right:
                 # assert black height of leaf
-                bh =  _black_height(node)
-                if self.measured_bh is None: self.measured_bh = bh
+                bh = _black_height(node)
+                # print('bh=' + str(bh))
+                if self.measured_bh is None: 
+                    self.measured_bh = bh
                 self.assertEqual(bh, self.measured_bh)
-                print("black height = {}".format(bh))
+                # print("black height = {}".format(bh))
             else:
                 if node.color == trees.RED:
                     if node.left: 
@@ -241,8 +214,10 @@ class TestTrees(unittest.TestCase):
                     self.assertNotEqual(node.parent, None)  # can't be a root
                     self.assertEqual(node.parent.color, trees.BLACK)
 
-                if node.left: _dfs_testproperty(node.left)
-                if node.right: _dfs_testproperty(node.right)
+                if node.left: 
+                    _dfs_testproperty(node.left)
+                if node.right: 
+                    _dfs_testproperty(node.right)
            
         # assert root is black
         self.assertEqual(self.rbt.root.color, trees.BLACK)
@@ -251,41 +226,45 @@ class TestTrees(unittest.TestCase):
             _dfs_testproperty(self.rbt.root)
 
         # TODO do insertions and deletions and then check the bh
-        self.measured_bh = None
-        self.rbt.insert(trees.RedBlackNode(4, trees.RED))
-        _dfs_testproperty(self.rbt.root)
-        self.measured_bh = None
-        self.rbt.insert(trees.RedBlackNode(3, trees.RED))
-        _dfs_testproperty(self.rbt.root)
-        self.measured_bh = None
-        self.rbt.insert(trees.RedBlackNode(13, trees.RED))
-        _dfs_testproperty(self.rbt.root)
-        self.measured_bh = None
-        self.rbt.insert(trees.RedBlackNode(6, trees.RED))
-        _dfs_testproperty(self.rbt.root)
-        self.measured_bh = None
-        self.rbt.insert(trees.RedBlackNode(20, trees.RED))
-        _dfs_testproperty(self.rbt.root)
-        self.measured_bh = None
-        self.rbt.insert(trees.RedBlackNode(30, trees.RED))
-        _dfs_testproperty(self.rbt.root)
-        self.measured_bh = None
-        self.rbt.insert(trees.RedBlackNode(40, trees.RED))
-        _dfs_testproperty(self.rbt.root)
-
-        i = 50
-        while self.measured_bh < 10:
+        # print("\n\nInserting new elements to RBT and printing\n{}\n".format(self.rbt))
+        elements_toinsert = [4, 3, 13, 6, 20, 30, 40]
+        elements_toinsert = [4]
+        for e in elements_toinsert:
             self.measured_bh = None
-            i += 3
+            self.rbt.insert(trees.RedBlackNode(e, trees.RED))
+            _dfs_testproperty(self.rbt.root)
+            # print("inserting {}\n{}\n".format(e, self.rbt))
+
+        # Insert numbers larger than rbt max until black height reaches threshold
+        i = 50
+        while self.measured_bh < 8:
+            self.measured_bh = None
+            i += 1
             self.rbt.insert(trees.RedBlackNode(i, trees.RED))
             _dfs_testproperty(self.rbt.root)
 
+        # Get actual height (preferring right due to previous loop)
+        height = 0
+        ptr = self.rbt.root
+        while ptr:
+            height += 1
+            if ptr.right: ptr = ptr.right
+            elif ptr.left: ptr = ptr.left
+            else: ptr = None
+        print('Height after long insertions: {}'.format(height))
+        # assert that black height is >= to half the actual height rounded up
+        self.assertGreaterEqual(self.measured_bh, math.ceil(height/2))
+
         print("starting random insertions")
-        for i in range(15):
+        for i in range(SAMPLE_SIZE):
             self.measured_bh = None
             r = random.randrange(0, 100)
             self.rbt.insert(trees.RedBlackNode(r, trees.RED))
             _dfs_testproperty(self.rbt.root)
+        # print("{}\n{}".format(self.rbt, self.rbt.count))
+
+    def test_rbtdelete(self): pass
+
 
 
 if __name__ == '__main__':
