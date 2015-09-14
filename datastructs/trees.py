@@ -129,25 +129,29 @@ class BinarySearchTree:
         return (node, replacement)
 
     def __str__(self):
-        c = 0
+        c = 0  # counts NILs too   
         level = 1
         q = [self.root]
-        s = ""
+        s = "P ---> N(L, R)\n"
         while q:
             n = q.pop(0)
             c += 1
-            if n: 
-                el_str = n.element
+            if n:
+                if n.parent:
+                    el_str = 'P={} ---> {}('.format(n.parent.element, n.element)
+                else:
+                    el_str = 'P=NIL ---> {}('.format(n.element)
+                if n.left: el_str += '{}, '.format(n.left.element)
+                else: el_str += 'NIL, '
+                if n.right: el_str += '{})'.format(n.right.element)
+                else: el_str += 'NIL)'
                 q.append(n.left)
                 q.append(n.right)
             else:
-                el_str = 'N'
-            if c >= math.pow(2, level):
-                level += 1
-                s += "\n{}, ".format(el_str)
-            else:
-                s += "{}, ".format(el_str)
+                el_str = 'NIL'
+            s += el_str + '\n'
         return s
+
 
 class RedBlackTree(BinarySearchTree):
 
