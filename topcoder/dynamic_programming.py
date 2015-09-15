@@ -50,18 +50,19 @@ class OrderOfOperations:
         t = []
         for instruction in s:
             k = 0
-            for c instruction:
+            for c in instruction:
                 if c == 1:
                     k += 1
             t.append((instruction, int(math.pow(k, 2))))
 
         # sort the new tuple list and run through knapsack
-        sorted_t = _sort_instructions(t, cache)
+        sorted_t = self._sort_instructions(t, cache)
 
-        return knapsack(sorted_t, cache, m)
+        order = []
+        return self.knapsack(sorted_t, cache, m, order)
 
 
-    def knapsack(self, sv, cache, m):
+    def knapsack(self, sv, cache, m, order):
         if m == 0: return 0
 
         # make new list without mth_item and sort it
@@ -71,22 +72,25 @@ class OrderOfOperations:
         
         # make new cache with the mth_item's 1s ticked off
         cache2 = list(cache)
-        for i, c in mth_item:
+        for i, c in enumerate(mth_item):
             if c == '1':
                 cache2[i] = 1
 
         sv2 = self._sort_instructions(sv2, cache2)        
 
         # return max of mth_item included vs mth_item skipped
-        return max(mth_val + self.knapsack(sv2, cache2, m - 1),
-                   self.knapsack(sv, cache, m - 1))
+        order2 = list(order)
+        order2.append(mth_item)
+        return min(mth_val + self.knapsack(sv2, cache2, m - 1, order2),
+                   self.knapsack(sv, cache, m - 1, order))
 
 
     def _sort_instructions(self, t, cache):
         """ Descending order. Returns a list of 2-tuples of """
         new_t = []  # size of t
         j = 0
-        for instruction, val in t:
+        for i, tpl in enumerate(t):
+            instruction, val = tpl
             k = 0
             for i, c in enumerate(instruction):
                 if c == '1' and cache[i] != 1: 
@@ -94,9 +98,11 @@ class OrderOfOperations:
             new_t.append((instruction, int(math.pow(k, 2))))
             j += 1
 
-        return sorted(new_t, lambda x: x[1], reverse=True)
+        return sorted(new_t, key=lambda x: x[1], reverse=True)
 
 
 if __name__ == '__main__':
-    s = ""
-    OrderOfOperations().minTime()
+    s = ["111",
+         "010",
+         "001"]
+    print(OrderOfOperations().minTime(s))
