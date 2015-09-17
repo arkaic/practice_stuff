@@ -1,5 +1,5 @@
-import sys; sys.path.insert(0, '/Users/henry/Dropbox/dev/practice/datastructs')
-import sorting, math
+import math, sys
+sys.path.insert(0, '/Users/henry/Dropbox/dev/practice/datastructs')
 
 class OrderOfOperations:
 
@@ -8,17 +8,15 @@ class OrderOfOperations:
         https://community.topcoder.com/stat?c=problem_statement&pm=13987
 
         Constraints:
-          n = [1, 50]
-          m = [1, 20]
-          n total instructions (len(s))
-          instruction has m characters, 0s or 1s
+          instruction count = Between 1 and 50, inclusive
+          character count = Between 1 and 20, inclusive
+          An instruction has only 0s or 1s
 
           010101
           110001
           000111
           010010
           100011
-
         """
 
         cache = [0] * len(s[0])
@@ -34,7 +32,7 @@ class OrderOfOperations:
 
         # sort the new tuple list and run through dp()
         sorted_inst_vals = self._sort_instructions(init_inst_vals, cache)
-        print("Initial sorted_inst_vals: \n{}\n\n".format(sorted_inst_vals))
+        print("SORTED INPUT WITH RUNTIMES\n{}".format(sorted_inst_vals))
 
         order = []
 
@@ -89,12 +87,8 @@ class OrderOfOperations:
                     clone_cache[i] = 1
             clone_order.append((inst, val))
 
-            print("cloneorder={}".format(clone_order))
-            print("cloneinstvalsbefore={}".format(clone_instvals))
-            print("clonecachebefore={}".format(clone_cache))
+            # re-sort the cloned instruction-values list and recurse
             clone_instvals = self._sort_instructions(clone_instvals, clone_cache)
-            print("cloneinstvalsafter= {}".format(clone_instvals))
-            print("clonecachebefore={}".format(clone_cache))
             self.dp(clone_instvals, clone_cache, clone_order, running_val + val)
 
     def _sort_instructions(self, inst_vals, cache):
@@ -107,7 +101,6 @@ class OrderOfOperations:
         new_instvals = []  # size of inst_vals
         for i, inst_val in enumerate(inst_vals):
             instruction, val = inst_val
-            print(instruction)
             k = 0
             for i, c in enumerate(instruction):
                 if c == '1' and cache[i] != 1:
@@ -127,6 +120,8 @@ if __name__ == '__main__':
          '010010',
          '100011',
          '001000']
+    # s = ['1']
+    print("INPUT\n{}".format(s))
     answer = OrderOfOperations().minTime(s)
 
-    print("\n\nINPUT\n{}\n\nANSWER\nOrder: {}\nValue: {}".format(s, answer[0], answer[1]))
+    print("\n\nBEST ORDER\nOrder: {}\nBEST TOTAL RUNTIME: {}".format(answer[0], answer[1]))
