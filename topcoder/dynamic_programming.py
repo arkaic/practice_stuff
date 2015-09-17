@@ -111,17 +111,26 @@ class OrderOfOperations:
 
 
 if __name__ == '__main__':
-    s = ["111",
-         "010",
-         "001"]
-    s = ['010101',
-         '110001',
-         '000111',
-         '010010',
-         '100011',
-         '001000']
-    # s = ['1']
-    print("INPUT\n{}".format(s))
-    answer = OrderOfOperations().minTime(s)
+    instructions = []
+    instructions.append(["111",
+                         "010",
+                         "001"])
+    instructions.append(["11101",
+                         "00111",
+                         "10101",
+                         "00000",
+                         "11000"])
+    instructions.append(['11111111111111111111'])
+    instructions.append(["1000",
+                         "1100",
+                         "1110"])
+    instructions.append(["111",
+                         "111",
+                         "110",
+                         "100"])
 
-    print("\n\nBEST ORDER\nOrder: {}\nBEST TOTAL RUNTIME: {}".format(answer[0], answer[1]))
+    for instruction in instructions:
+        print("INPUT\n{}".format(instruction))
+        answer = OrderOfOperations().minTime(instruction)
+        print("\nBEST ORDER\nOrder: {}\nBEST TOTAL RUNTIME: {}".format(answer[0], answer[1]))
+        print("----------------------")
