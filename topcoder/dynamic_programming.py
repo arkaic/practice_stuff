@@ -54,7 +54,7 @@ class OrderOfOperations:
             return
 
         # Automatically add in all zero-instructions
-        while inst_vals[0][1] == 0:
+        while inst_vals and inst_vals[0][1] == 0:
             order.append(inst_vals.pop(0))
 
         # Update global bests when all instructions added if values are lower, 
@@ -88,7 +88,7 @@ class OrderOfOperations:
                 if c == '1' and clone_cache[i] != 1:
                     clone_cache[i] = 1
             clone_order.append((inst, val))
-            
+
             print("cloneorder={}".format(clone_order))
             print("cloneinstvalsbefore={}".format(clone_instvals))
             print("clonecachebefore={}".format(clone_cache))
@@ -97,9 +97,11 @@ class OrderOfOperations:
             print("clonecachebefore={}".format(clone_cache))
             self.dp(clone_instvals, clone_cache, clone_order, running_val + val)
 
-    def _sort_instructions(self, inst_vals, cache):        
-        """ @param inst_vals: [ (str instruction, int val) ]
-        Ascending order. """
+    def _sort_instructions(self, inst_vals, cache):
+        """ 
+        @param inst_vals: [ (str instruction, int val) ]
+        Sorts in ascending order
+        """
         if not inst_vals: 
             raise Exception("shouldn't happen")
         new_instvals = []  # size of inst_vals
@@ -119,6 +121,12 @@ if __name__ == '__main__':
     s = ["111",
          "010",
          "001"]
+    s = ['010101',
+         '110001',
+         '000111',
+         '010010',
+         '100011',
+         '001000']
     answer = OrderOfOperations().minTime(s)
 
     print("\n\nINPUT\n{}\n\nANSWER\nOrder: {}\nValue: {}".format(s, answer[0], answer[1]))
