@@ -82,17 +82,13 @@ class LLNode:
 class LinkedList:
     def __init__(self, head=None):
         self.head = head
-        if not hasattr(head, 'next'):
-            self.head = None
+        if not hasattr(head, 'next'): self.head = None
 
     def reverse(self):
         def _rec(prevnode, curnode):
-            if curnode.next:
-                _rec(curnode, curnode.next)
-            else:
-                self.head = curnode
+            if curnode.next: _rec(curnode, curnode.next)
+            else: self.head = curnode
             curnode.next = prevnode
-
         _rec(None, self.head)
 
 

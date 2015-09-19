@@ -46,7 +46,7 @@ class TestHashTable(unittest.TestCase):
 class LinkedList(unittest.TestCase):
 
     def setUp(self):
-        self.elements = [1,2,3,4,5,6,7]
+        self.elements = [1,99,8,2,3,6,7]
         self.nodes = []
         prev = None
         for e in self.elements:
@@ -61,14 +61,15 @@ class LinkedList(unittest.TestCase):
                 self.assertNotEqual(n.next, None)
 
         self.ll = mycollections.LinkedList(self.nodes[0])
-        print(self.ll)
 
     def test_reverse(self):
         # TODO put asserts
         print('Test reverse')
-        print('BEFORE: {}'.format(self.ll))
+        print('BEFORE REVERSE: {}'.format(self.ll))
+        self.assertTrue(self.ll.head is self.nodes[0])
         self.ll.reverse()
-        print('AFTER: {}'.format(self.ll))
+        print('AFTER REVERSE:  {}'.format(self.ll))
+        self.assertTrue(self.ll.head is self.nodes[len(self.nodes) - 1])
 
 
 if __name__ == '__main__':
