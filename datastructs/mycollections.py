@@ -65,7 +65,7 @@ class HashtableOA:
 
     def _linear_probe(self, k, h, step):
         """ Returns an index pointing to either an empty position or one that
-        contains the tuple with the key  
+        contains the tuple with the key
         """
         h += step
         index = h % len(self.l)
@@ -73,4 +73,37 @@ class HashtableOA:
             return index
         else:
             return self._linear_probe(k, h, step)
+
+class LLNode:
+    def __init__(self, e):
+        self.element = e
+        self.next = None
+
+class LinkedList:
+    def __init__(self, head=None):
+        self.head = head
+        if not hasattr(head, 'next'):
+            self.head = None
+
+    def reverse(self):
+        def _rec(prevnode, curnode):
+            if curnode.next:
+                _rec(curnode, curnode.next)
+            else:
+                self.head = curnode
+            curnode.next = prevnode
+
+        _rec(None, self.head)
+
+
+    def __str__(self):
+        s = '['
+        curnode = self.head
+        while curnode:
+            s += '{}, '.format(curnode.element)
+            curnode = curnode.next
+        s = s[:-2] + ']'
+        return s
+
+
 
