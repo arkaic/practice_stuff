@@ -46,8 +46,11 @@ class TestHashTable(unittest.TestCase):
 class LinkedList(unittest.TestCase):
 
     def setUp(self):
-        self.elements = [1,99,8,2,3,6,7]
+        self.element_not_included = 7521
+        self.elements = [1,99,8,2,3,6,7,2]
+        self.elements_no_dupes = [1,99,8,2,3,6,7]
         self.nodes = []
+        self.nodes_no_dupes = []
         prev = None
         for e in self.elements:
             n = mycollections.LLNode(e)
@@ -56,11 +59,22 @@ class LinkedList(unittest.TestCase):
                 prev.next = n
             prev = n
         self.assertEqual(len(self.elements), len(self.nodes))
+
+        prev = None
+        for e in self.elements_no_dupes:
+            n = mycollections.LLNode(e)
+            self.nodes_no_dupes.append(n)
+            if prev:
+                prev.next = n
+            prev = n
+        self.assertEqual(len(self.elements_no_dupes), len(self.nodes_no_dupes))
+
         for i,n in enumerate(self.nodes):
             if i != len(self.nodes) - 1:
                 self.assertNotEqual(n.next, None)
 
         self.ll = mycollections.LinkedList(self.nodes[0])
+        self.ll_no_dupes = mycollections.LinkedList(self.nodes_no_dupes[0])
 
     def test_reverse(self):
         # TODO put asserts
@@ -70,6 +84,33 @@ class LinkedList(unittest.TestCase):
         self.ll.reverse()
         print('AFTER REVERSE:  {}'.format(self.ll))
         self.assertTrue(self.ll.head is self.nodes[len(self.nodes) - 1])
+
+    def test_find(self):
+        for i, e in enumerate(self.elements_no_dupes):
+            print('i ' + str(i))
+            print('e ' + str(e))
+            print(self.nodes_no_dupes[i])
+            self.assertTrue(self.ll_no_dupes.find(e) is self.nodes_no_dupes[i])
+        self.assertTrue(self.ll_no_dupes.find(self.element_not_included) is None)
+
+    def test_tail(self):
+        self.assertTrue(self.ll.tail() is self.nodes[len(self.nodes) - 1])        
+        self.assertTrue(self.ll_no_dupes.tail() is self.nodes_no_dupes[len(self.nodes_no_dupes) - 1])
+
+    def test_add(self):
+        added_element = 5
+        self.ll.add(added_element)
+        self.assertTrue(self.ll.tail().element == added_element)
+
+
+
+    def test_delete(self):
+        print('TEST DELETE')
+        print('Before:    {}'.format(self.ll))
+        self.ll.delete(2)
+        print('AFter (2): {}'.format(self.ll))
+        self.ll.delete(self.ll.head.element)
+        self.assertTrue(self.ll.head is self.nodes[1])
 
 
 if __name__ == '__main__':

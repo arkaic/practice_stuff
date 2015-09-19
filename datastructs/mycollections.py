@@ -78,6 +78,8 @@ class LLNode:
     def __init__(self, e):
         self.element = e
         self.next = None
+    def __str__(self):
+        return str(self.element)
 
 class LinkedList:
     def __init__(self, head=None):
@@ -91,6 +93,45 @@ class LinkedList:
             curnode.next = prevnode
         _rec(None, self.head)
 
+    def find(self, e):
+        def _rec(curnode):
+            if not curnode or curnode.element == e:
+                return curnode
+            return _rec(curnode.next)
+        return _rec(self.head)
+
+    def delete(self, e):
+        def _rec(curnode, prevnode, count):
+            if not curnode:
+                return count
+            if curnode.element == e:
+                count += 1
+                if not prevnode:
+                    self.head = curnode.next
+                    return _rec(curnode.next, None, count)
+                else:
+                    prevnode.next = curnode.next
+                    return _rec(curnode.next, prevnode, count)
+            else: 
+                return _rec(curnode.next, curnode, count)
+
+        return _rec(self.head, None, 0)
+
+    def tail(self):
+        def _search(curnode):
+            if curnode.next is None:
+                return curnode
+            return _search(curnode.next)
+
+        if not self.head:
+            return None
+        return _search(self.head)
+
+    def add(self, e):
+        if not self.head:
+            self.head = LLNode(e)
+        else:
+            self.tail().next = LLNode(e)
 
     def __str__(self):
         s = '['
