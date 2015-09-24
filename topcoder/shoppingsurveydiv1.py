@@ -7,8 +7,18 @@ class ShoppingSurveyDiv1:
         # n = number of people
         # k = minimum items bought to be a Big Shopper
         # S = list of counts of each item
-        # k cannot be more than the number of distinct items
+        # k <= size of S
 
+        # Strategy: first, take a shopper and assume he buys one of each item
+        # in S, automatically making him a big shopper. Divide the sum of
+        # the rest of the items amongst the rest of the shoppers.
+        # If there are more buyers than the sum, then there're no more big 
+        # shoppers. If the dividing allocates an amount ONE less than k to everyone
+        # else AND there are none left over, then there are no more big shoppers.
+        # If there is one left over, then there is one more big shopper as she
+        # buys this extra item bumping her to having bought k items. 
+        # If the quotient is less than k-1, there's also obviously no more big 
+        # shoppers
         min_bigshoppers = 0
         while True:
             S = list(map(lambda x: x - 1, S))
@@ -16,12 +26,12 @@ class ShoppingSurveyDiv1:
             # if i can divide the rest of items to everyone else and not 
             # come up with another big shopper, return min shoppers
             sum_remainingitems = sum(list(filter(lambda x: x >= 0, S)))
-            d = int(sum_remainingitems / (n - min_bigshoppers))
-            r = sum_remainingitems % (n - min_bigshoppers)
-            if d == 0:
+            quo = int(sum_remainingitems / (n - min_bigshoppers))
+            rem = sum_remainingitems % (n - min_bigshoppers)
+            if quo == k - 1 and rem <= 1:
+                return min_bigshoppers + rem
+            elif quo < k:
                 return min_bigshoppers
-            if d < k and r <= 1:
-                return min_bigshoppers + r
 
 
 class TestShoppingSurveyDiv1(unittest.TestCase):
