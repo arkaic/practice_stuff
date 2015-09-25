@@ -8,7 +8,7 @@ class DevuAndGame:
     def canWin(self, nextLevel):
         history = set()
         current = nextLevel[0]
-        # If you revisit a location, then there is a loop
+        # If you revisit a location, then there is a loop, thus you can't win
         while current not in history:
             if current == -1:
                 return 'Win'

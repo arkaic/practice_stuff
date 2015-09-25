@@ -30,7 +30,7 @@ class ShoppingSurveyDiv1:
             rem = sum_remainingitems % (n - min_bigshoppers)
             if quo == k - 1 and rem <= 1:
                 return min_bigshoppers + rem
-            elif quo < k:
+            elif quo < k - 1:
                 return min_bigshoppers
 
 

@@ -24,8 +24,8 @@ class EightRooks:
 
 class TestEightRooks(unittest.TestCase):
     def setUp(self):
-        self.input = []
-        self.input.append([["R.......",
+        inputs = []
+        inputs.append([["R.......",
                            ".R......",
                            "..R.....",
                            "...R....",
@@ -33,7 +33,7 @@ class TestEightRooks(unittest.TestCase):
                            ".....R..",
                            "......R.",
                            ".......R"], 'Correct'])
-        self.input.append([["........",
+        inputs.append([["........",
                            "....R...",
                            "........",
                            ".R......",
@@ -41,7 +41,7 @@ class TestEightRooks(unittest.TestCase):
                            "........",
                            "..R.....",
                            "........"], 'Incorrect'])
-        self.input.append([["......R.",
+        inputs.append([["......R.",
                            "....R...",
                            "...R....",
                            ".R......",
@@ -49,7 +49,7 @@ class TestEightRooks(unittest.TestCase):
                            ".....R..",
                            "..R.....",
                            ".......R"], 'Correct'])
-        self.input.append([["......R.",
+        inputs.append([["......R.",
                            "....R...",
                            "...R....",
                            ".R......",
@@ -57,7 +57,7 @@ class TestEightRooks(unittest.TestCase):
                            ".......R",
                            "..R.....",
                            ".......R"], 'Incorrect'])
-        self.input.append([["........",
+        inputs.append([["........",
                            "........",
                            "........",
                            "........",
@@ -65,11 +65,9 @@ class TestEightRooks(unittest.TestCase):
                            "........",
                            "........",
                            "........"], 'Incorrect'])
-
-    def test_isCorrect(self):
         er = EightRooks()
         c = 0
-        for board, answer in self.input:
+        for board, answer in inputs:
             self.assertEqual(er.isCorrect(board), answer, "c=" + str(c))
             c += 1
 
