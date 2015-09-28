@@ -8,32 +8,31 @@ class StringsNightmareAgain:
         for i in range(a):
             b = (b * c + d) % n
             l[b] = 'b'
-        print('STRING = {}'.format(''.join(l)))
+        # print('STRING = {}'.format(''.join(l)))
 
         count = 0
         checked = set()
         for i in range(1, int(n / 2) + 1):
             # iterating over size of magical
+            a_count = b_count = 0
             if i == 1:
-                checked.add('a')
-                if len(list(filter(lambda x: x == 'a', l))) > 1:
-                    count += 1
-                checked.add('b')
-                if len(list(filter(lambda x: x == 'b', l))) > 1:
-                    count += 1
+                s = set()
+                for c in l:
+                    s.add(c)
+                    if len(s) == 2: break
+                count += len(s)
             else:
-                for j in range(n):
+                j = 0
+                while j + (i * 2) <= n:
                     # iterating over string with current size
-
-                    # break out if the current magical exceeds n
-                    if (j + (i * 2)) > n: break
-
-                    magical = ''.join(l[j: j + i])
+                    start, end = j, j + i
+                    j += 1
+                    magical = ''.join(l[start:end])
                     if magical in checked:
                         continue
                     checked.add(magical)
 
-                    k = j + i
+                    k = end
                     while k + i <= n:
                         against = ''.join(l[k: k + i])
                         if against == magical:
