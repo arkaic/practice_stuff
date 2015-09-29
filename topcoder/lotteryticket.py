@@ -4,7 +4,9 @@ class LotteryTicket:
     """https://community.topcoder.com/stat?c=problem_statement&pm=10860"""
 
     def buy(self, price, b1, b2, b3, b4):
-        # utilize knapsack strategy recursively
+        # Utilize recursive knapsack. Instead of finding max, knapsack
+        # will just check if c can ever equal price. The returns are then
+        # OR'd so that a single True means it's possible
         def _knapsack(bs, i, c):
             if c == price:
                 return True
