@@ -16,6 +16,7 @@ class StringsNightmareAgain:
             # iterating over size of magical
             a_count = b_count = 0
             if i == 1:
+                # for singular characters, we're just looking for a's and b's
                 s = set()
                 for c in l:
                     s.add(c)

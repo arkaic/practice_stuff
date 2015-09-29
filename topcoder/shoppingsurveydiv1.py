@@ -13,7 +13,7 @@ class ShoppingSurveyDiv1:
         # in S, automatically making him a big shopper. Divide the sum of
         # the rest of the items amongst the rest of the shoppers.
         # If there are more buyers than the sum, then there're no more big 
-        # shoppers. If the dividing allocates an amount ONE less than k to everyone
+        # shoppers. If the dividing allocates an amount ONE less than k to everyon
         # else AND there are none left over, then there are no more big shoppers.
         # If there is one left over, then there is one more big shopper as she
         # buys this extra item bumping her to having bought k items. 
@@ -23,8 +23,6 @@ class ShoppingSurveyDiv1:
         while True:
             S = list(map(lambda x: x - 1, S))
             min_bigshoppers += 1
-            # if i can divide the rest of items to everyone else and not 
-            # come up with another big shopper, return min shoppers
             sum_remainingitems = sum(list(filter(lambda x: x >= 0, S)))
             quo = int(sum_remainingitems / (n - min_bigshoppers))
             rem = sum_remainingitems % (n - min_bigshoppers)
