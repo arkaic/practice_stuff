@@ -4,28 +4,30 @@ class FoxCardGame:
     """ https://community.topcoder.com/stat?c=problem_statement&pm=11236 """
     def theMaxProportion(self, A, B, k):
         # Generate all possible pairs
-        differences = []
+        pairs = []
         for a in A:
             for b in B:
-                differences.append((a, b, abs(a * b - (a + b))))
-        differences = sorted(differences, key=lambda x: x[2], reverse=True)
+                pairs.append((a, b))
 
         self.divided = None
-        self._rec(differences, k, 0, 0)
+        self._recurse(pairs, k, 0, 0)
         return self.divided
 
-    def _rec(self, differences, k, j, h):
+    def _recurse(self, pairs, k, j, h):
         if k == 0:
             if self.divided is None: 
-                self.divided = j/ h
+                self.divided = j / h
             else:
                 self.divided = max(self.divided, j / h)
             return
-        for a, b, dif in differences:
+
+        for a, b in pairs:
+            # clone pairs with all tuples that have either/both a and b removed
             clone = list(filter(
                 lambda x: x[0] != a and x[0] != b and x[1] != a and x[1] != b, 
-                differences))
-            self._rec(clone, k - 1, j + max(a+b, a*b), h + min(a+b, a*b))
+                pairs
+            ))
+            self._recurse(clone, k - 1, j + max(a+b, a*b), h + min(a+b, a*b))
 
 
 class TestFoxCardGame(unittest.TestCase):
