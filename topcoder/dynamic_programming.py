@@ -7,10 +7,26 @@ class OrderOfOperations:
         """  Dynamic programming problem
         https://community.topcoder.com/stat?c=problem_statement&pm=13987
 
+        Given is a list, s, of binary strings of equal length. Each represents 
+        a set machine instructions where a 1 or 0 at i means to access or not 
+        access the instruction at memory cell i. 
+
+        For any given string (or a set of instructions), it will have a runtime
+        based on the amount of new memory cell accesses, k. Runtime = k^2. 
+
+        For example, say you have two sets of instructions, 1001 and 1100. If 
+        you execute 1001 first, the runtime will be 2^2 = 4. But if you execute
+        1100 first, the first '1' will have been accessed, and so 1001 will 
+        now take 1^2 = 1 time. 
+
+        Goal: Given a list of sets of instructions, output the order of 
+        execution with the best runtime.
+
         Constraints:
-          instruction count = Between 1 and 50, inclusive
-          character count = Between 1 and 20, inclusive
-          An instruction has only 0s or 1s
+          - instruction count = Between 1 and 50, inclusive
+          - character count = Between 1 and 20, inclusive
+          - An instruction has only 0s or 1s.
+          - Each instruction set must be executed sequentially and exactly once
 
           010101
           110001
