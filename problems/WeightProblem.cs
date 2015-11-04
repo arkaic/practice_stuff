@@ -22,8 +22,9 @@ public class WeightProblem
 
         foreach (Tuple<int, bool> input in testInputs)
         {
-            List<int> incrementsChosen = new List<int>();
-            if (w.solve(input.Item1, incrementsChosen) == input.Item2) 
+            List<int> incrementsChosen = new List<int>(); 
+            int[] increments = {16, 7, 3};   // choices of what he can drop
+            if (w.solve(input.Item1, incrementsChosen, increments) == input.Item2) 
             {
                 WriteLine("Test input: [{0} lbs, {1}]", input.Item1, input.Item2);
                 if (input.Item2)
@@ -51,19 +52,29 @@ public class WeightProblem
         return;
     }
 
-    public bool solve(int weight, List<int> incrementsChosen)
+    /*
+     * The depth first search ALGORITHM to solve the problem.
+     * The ordering of the increments should be nonincreasing so that the dfs
+     * prioritizes choosing the largest increments to get the best possible 
+     * combination. Returns true if a solution is found, otherwise false, recursively.
+    
+     * Note: Probably faster if I use a linked list implementation for 
+     * incrementschosen. The increase in speed would be from not having to resize
+     * the list if it gets too large. It won't be THAT much fast because the adding
+     * and removing currently are from the ends of the ArrayList so there isn't a 
+     * constant dynamic resizing, at least.
+     */
+    public bool solve(int weight, List<int> incrementsChosen, int[] increments)
     {
         // Base cases
-        if (weight == 0)
-            return true;
-        if (weight < 0)
-            return false;
+        if (weight == 0) return true;
+        if (weight < 0) return false;
 
-        int[] increments = {16, 7, 3};
         foreach (int inc in increments)
         {
             incrementsChosen.Add(inc);
-            if (solve(weight - inc, incrementsChosen))
+            // first solution found also assumed to be the best, so cut off the dfs
+            if (solve(weight - inc, incrementsChosen, increments))
                 return true;
             incrementsChosen.RemoveAt(incrementsChosen.Count - 1);
         }
