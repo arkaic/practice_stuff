@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using static System.Console;
 
 // 3, 7, 16. They are the only weight drops that our poor man can lose. Can he lose
 // just enough to make it to 0 without going negative? 
@@ -10,33 +11,41 @@ public class WeightProblem
     public static void Main()
     {
         WeightProblem w = new WeightProblem();
-        int totalWeight = 444;
-        w.solve(totalWeight)
+        List<Tuple<int, bool>> testInputs = new List<Tuple<int, bool>>();
+        testInputs.Add(Tuple.Create(3, true));
+        testInputs.Add(Tuple.Create(4, false));
+        testInputs.Add(Tuple.Create(9, true));
+        testInputs.Add(Tuple.Create(10, true));
+        testInputs.Add(Tuple.Create(11, false));
+        testInputs.Add(Tuple.Create(20, true));
+        WriteLine("testing");
+
+        foreach (Tuple<int, bool> input in testInputs)
+        {
+            List<int> incrementsChosen = new List<int>();
+            if (w.solve(input.Item1, incrementsChosen) == input.Item2)
+                WriteLine("Test passed for weight {0}", input.Item1);
+            else
+                WriteLine("Test failed");
+        }
     }
 
-    public void solve(int totalWeight)
+    public bool solve(int weight, List<int> incrementsChosen)
     {
-        List<int> weights = new List<int>();
-        recurse(totalWeight, weights);
-    }
-
-    public bool recurse(int weight, int weights)
-    {
+        // Base cases
         if (weight == 0)
-        {
             return true;
-        }
         if (weight < 0)
-        {
             return false;
-        }
-        int[] weightDrops = {16, 7, 3};
-        foreach (int drop in weightDrops)
+
+        int[] increments = {16, 7, 3};
+        foreach (int inc in increments)
         {
-            weights.Add(drop);
-            if (recurse(weight - drop, weights))
+            incrementsChosen.Add(inc);
+            if (solve(weight - inc, incrementsChosen))
                 return true;
-            weights.RemoveAt(weights.Count - 1);
+            incrementsChosen.RemoveAt(incrementsChosen.Count - 1);
         }
+        return false;
     }
 }
