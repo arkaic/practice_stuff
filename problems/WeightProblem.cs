@@ -14,20 +14,41 @@ public class WeightProblem
         List<Tuple<int, bool>> testInputs = new List<Tuple<int, bool>>();
         testInputs.Add(Tuple.Create(3, true));
         testInputs.Add(Tuple.Create(4, false));
-        testInputs.Add(Tuple.Create(9, true));
+        testInputs.Add(Tuple.Create(8, false));
         testInputs.Add(Tuple.Create(10, true));
         testInputs.Add(Tuple.Create(11, false));
-        testInputs.Add(Tuple.Create(20, true));
-        WriteLine("testing");
+        testInputs.Add(Tuple.Create(321, true));
+        testInputs.Add(Tuple.Create(445, true));
 
         foreach (Tuple<int, bool> input in testInputs)
         {
             List<int> incrementsChosen = new List<int>();
-            if (w.solve(input.Item1, incrementsChosen) == input.Item2)
-                WriteLine("Test passed for weight {0}", input.Item1);
+            if (w.solve(input.Item1, incrementsChosen) == input.Item2) 
+            {
+                WriteLine("Test input: [{0} lbs, {1}]", input.Item1, input.Item2);
+                if (input.Item2)
+                {
+                    int c = 0;
+                    foreach (var inc in incrementsChosen)
+                    {
+                        Write("{0} ", inc);
+                        c += inc;
+                    }
+                    WriteLine("");
+                    if (c != input.Item1)
+                        exitOnTestFail();
+                }
+                WriteLine("Tests passed\n");
+            }
             else
-                WriteLine("Test failed");
+                exitOnTestFail();
         }
+    }
+
+    public static void exitOnTestFail()
+    {
+        WriteLine("Test failed");
+        return;
     }
 
     public bool solve(int weight, List<int> incrementsChosen)
