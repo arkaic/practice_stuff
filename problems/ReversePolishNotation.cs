@@ -14,33 +14,45 @@ class ReversePolishNotation
     int Solve(string[] tokens)
     {
         Stack<int> evalStack = new Stack<int>();
+        Stack<string> exprStack = new Stack<string>(); // builds the string represention
         foreach (string token in tokens)
         {
             int a, b;
+            a = b = 0;
+            string s, t;
+            s = t = null;
+            if (token.Equals("+") || token.Equals("*") || token.Equals("/") || token.Equals("-"))
+            {
+                b = evalStack.Pop();
+                a = evalStack.Pop();
+                t = exprStack.Pop();
+                s = exprStack.Pop();
+            }
             switch (token)
             {
                 case "+":
-                    evalStack.Push(evalStack.Pop() + evalStack.Pop());
+                    evalStack.Push(a + b);
+                    exprStack.Push("(" + s + " + " + t + ")");
                     break;
                 case "*":
-                    evalStack.Push(evalStack.Pop() * evalStack.Pop());
+                    evalStack.Push(a * b);
+                    exprStack.Push("(" + s + " * " + t + ")");
                     break;
                 case "/":
-                    b = evalStack.Pop();
-                    a = evalStack.Pop();
                     evalStack.Push(a / b);
+                    exprStack.Push("(" + s + " / " + t + ")");
                     break;
                 case "-":
-                    b = evalStack.Pop();
-                    a = evalStack.Pop();
                     evalStack.Push(a - b);
+                    exprStack.Push("(" + s + " - " + t + ")");
                     break;
                 default:
                     evalStack.Push(Int32.Parse(token));
+                    exprStack.Push(token);
                     break;
             }
         }
-        WriteLine(evalStack.Peek());
+        WriteLine("{0} = {1}", exprStack.Peek(), evalStack.Peek());
         return evalStack.Pop();
     }
 
