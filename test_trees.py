@@ -23,10 +23,7 @@ class TestBinarySearchTree(unittest.TestCase):
                 if x is None:
                     nodes.append(x)
                 else:
-                    if treetype == BST:
-                        nodes.append(trees.Node(x))
-                    elif treetype == RBT:   # !!!!!!!!!!
-                        nodes.append(trees.RedBlackNode(x[0], x[1]))
+                    nodes.append(trees.Node(x))
 
             # connect them
             for i, node in enumerate(nodes):
@@ -58,19 +55,10 @@ class TestBinarySearchTree(unittest.TestCase):
                      None, None, 2, 9, None, None, 9, None]
         self.singlebst_element = [None, 8]
 
-        B, R = trees.BLACK, trees.RED  # !!!!!!!!!!!!!!!!!
-        rb_els = [None, (11,B),
-                  (2, R), (14, B),
-                  (1, B), (7, B), None, (15, R),
-                  None, None, (5, R), (8, R), None, None, None, None]
-
         # Generate a linked tree of Node objects
         nodes = _generate_connected_nodes(self.bst_elements, BST)
         wrong_nodes = _generate_connected_nodes(self.wrongbst_elements, BST)
         single_node = _generate_connected_nodes(self.singlebst_element, BST)
-
-        rbnodes = _generate_connected_nodes(rb_els, RBT)
-        # wrong_rbnodes = _generate_connected_nodes(self.wrongbst_elements, RBT)
 
         # Create the bsts (wrongbst breaks the property of bsts)
         self.bst = trees.BinarySearchTree(root=nodes[1])
@@ -79,25 +67,9 @@ class TestBinarySearchTree(unittest.TestCase):
         self.wrongbst.count = 9
         self.singlebst = trees.BinarySearchTree(root=single_node[1])
         self.singlebst.count = 1
-
-        self.rbt = trees.RedBlackTree(root=rbnodes[1])
-        self.rbt.count = 9
-        self.initial_bh_rbt = 2
-        self.measured_bh = None
-        # self.wrongrbt = trees.RedBlackTree(root=wrong_rbnodes[1])
-        # self.wrongrbt.count = 9
-
-    def test_bstinsert(self):
-        print("\n\n\nStart Bst\n\n{}".format(self.bst))
-        elements_toinsert = [5]
-        for e in elements_toinsert:
-            n = trees.Node(5)
-            self.bst.insert(n)
-            print("Inserting {} into bst\n{}".format(e, self.bst))
-        print("\n\n")
-
     
     def test_search(self):
+        print("\n********TEST B.S. TREE SEARCH PROPERTIES*******")
         # test that roots can also be searched for in a single element bst
         self.assertEqual(self.singlebst.search(8).element, 8)
         self.assertEqual(self.singlebst.search(4), None)
@@ -107,6 +79,7 @@ class TestBinarySearchTree(unittest.TestCase):
                 self.assertEqual(self.bst.search(e).element, e)
 
     def test_insert(self):
+        print("\n********TEST B.S. TREE INSERT PROPERTIES*******")
         self.assertFalse(self.singlebst.insert(trees.Node(8)))
         self.assertTrue(self.singlebst.insert(trees.Node(1)))
         self.assertEqual(self.singlebst.count, 2)
@@ -127,6 +100,7 @@ class TestBinarySearchTree(unittest.TestCase):
 
     def test_bstproperty(self):
         """ All children of a node's left subtree must be less than, and vice versa. """
+        print("\n********TEST B.S. TREE PROPERTIES*******")
 
         def _dfs_all(node):
             """dfs_all() will recursively go through all nodes.
@@ -180,13 +154,62 @@ class TestBinarySearchTree(unittest.TestCase):
         # self.assertEqual(self.bst.count, 0)  # hack to see if dfs was looking through everything
         # _dfs_all(self.wrongbst.root)   # this will assert false
 
-    def test_rbtproperty(self):
+
+class TestRedBlackTree(unittest.TestCase):
+
+    def setUp(self):
+        def _generate_connected_nodes(els, treetype):
+            nodes = []
+            for i, x in enumerate(els):
+                if x is None:
+                    nodes.append(x)
+                else:
+                    nodes.append(trees.RedBlackNode(x[0], x[1]))
+
+            # connect them
+            for i, node in enumerate(nodes):
+                if node is not None:
+                    if i > 1: node.parent = nodes[int(i / 2)]
+                    if i * 2 < len(nodes): node.left = nodes[i * 2]
+                    if i * 2 + 1 < len(nodes): node.right = nodes[i * 2 + 1]
+            return nodes
+        # END
+
+        #       8
+        #     /   \
+        #    3     10
+        #  /  \   /  \  
+        # 1    6      14
+        #/ \  / \    /
+        #     4  7  13
+        #    [2][9] [9]
+        B, R = trees.BLACK, trees.RED
+        rb_els = [None, (11,B),
+                  (2, R), (14, B),
+                  (1, B), (7, B), None, (15, R),
+                  None, None, (5, R), (8, R), None, None, None, None]
+
+        # Generate a linked tree of Node objects
+        rbnodes = _generate_connected_nodes(rb_els, RBT) #!!!!!!!!!!!!!
+        # wrong_rbnodes = _generate_connected_nodes(self.wrongbst_elements, RBT)
+
+        # Create the RBTs (wrong RBTs break the property of RBTs)
+        self.rbt = trees.RedBlackTree(root=rbnodes[1])
+        self.rbt.count = 9
+        self.initial_bh_rbt = 2
+        self.measured_bh = None
+        # self.wrongrbt = trees.RedBlackTree(root=wrong_rbnodes[1])
+        # self.wrongrbt.count = 9
+
+    def test_rbtproperty(self):  #!!!!!!!!!!!!!!!
         """ Root is black, black depth is equal from every leaf,
         all red parents have black children
 
         _dfs_testproperty() tests redblack tree property for a given node
         and recursively its children
         """
+        print("\n********TEST REDBLACKTREE PROPERTIES*******")
+
         def _dfs_testproperty(node):
             def _black_height(n):
                 if n.color == trees.BLACK:
@@ -218,7 +241,6 @@ class TestBinarySearchTree(unittest.TestCase):
                 if node.right: 
                     _dfs_testproperty(node.right)
         
-        print("+++++++++++++++++++++ Starting red black tree testing")
         # assert root is black
         self.assertEqual(self.rbt.root.color, trees.BLACK)
         
@@ -260,50 +282,9 @@ class TestBinarySearchTree(unittest.TestCase):
             self.rbt.insert(trees.RedBlackNode(r, trees.RED))
             _dfs_testproperty(self.rbt.root)
 
-    def test_rbtdelete(self): 
+    def test_rbtdelete(self):
+        print("\n********TEST REDBLACKTREE DELETE********")
         pass
-
-
-class TestRedBlackTree(unittest.TestCase):
-
-    def setUp(self):
-        print("TestRedBlackTree setup")
-
-        def _generate_connected_nodes(els, treetype):
-            nodes = []
-            for i, x in enumerate(els):
-                if x is None:
-                    nodes.append(x)
-                else:
-                    nodes.append(trees.RedBlackNode(x[0], x[1]))
-
-            # connect them
-            for i, node in enumerate(nodes):
-                if node is not None:
-                    if i > 1: node.parent = nodes[int(i / 2)]
-                    if i * 2 < len(nodes): node.left = nodes[i * 2]
-                    if i * 2 + 1 < len(nodes): node.right = nodes[i * 2 + 1]
-
-            return nodes
-        # end nested function
-
-        #       8
-        #     /   \
-        #    3     10
-        #  /  \   /  \  
-        # 1    6      14
-        #/ \  / \    /
-        #     4  7  13
-        #    [2][9] [9]
-        B, R = trees.BLACK, trees.RED
-        rb_els = [None, (11,B),
-                  (2, R), (14, B),
-                  (1, B), (7, B), None, (15, R),
-                  None, None, (5, R), (8, R), None, None, None, None]
-
-
-    def test_rbtproperty(self):
-        print("Test red black tree properties")
 
 
 if __name__ == '__main__':
