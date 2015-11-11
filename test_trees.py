@@ -161,10 +161,8 @@ class TestRedBlackTree(unittest.TestCase):
         def _generate_connected_nodes(els, treetype):
             nodes = []
             for i, x in enumerate(els):
-                if x is None:
-                    nodes.append(x)
-                else:
-                    nodes.append(trees.RedBlackNode(x[0], x[1]))
+                if x is None: nodes.append(x)
+                else: nodes.append(trees.RedBlackNode(x[0], x[1]))
 
             # connect them
             for i, node in enumerate(nodes):
@@ -210,16 +208,29 @@ class TestRedBlackTree(unittest.TestCase):
         """
         print("\n********TEST REDBLACKTREE PROPERTIES*******")
 
+
         def _dfs_testproperty(node):
+            """ Recursive function with a nested recursive function """
             def _black_height(n):
+                """ recursively finds black height of a leaf """
                 if n.color == trees.BLACK:
                     if n.parent:
                         return 1 + _black_height(n.parent)
                     else: 
                         return 1
-                if n.parent: return _black_height(n.parent)
-                else: return 0
+                if n.parent: 
+                    return _black_height(n.parent)
+                else: 
+                    return 0
 
+            def _black_height_to_leaves(n):
+                """ TODO
+                recursively checks if black heights to all of n's leaves are
+                the same. 
+                """
+                pass
+
+            # DFS nodes down to leaves, then call _black_height on leaf
             if not node.left and not node.right:
                 # assert black height of leaf
                 bh = _black_height(node)
@@ -227,6 +238,10 @@ class TestRedBlackTree(unittest.TestCase):
                     self.measured_bh = bh
                 self.assertEqual(bh, self.measured_bh)
             else:
+                # assert properties of each node
+                # TODO add yet another recursive function in this scope to 
+                # assert that each node has the same black height to ANY of its
+                # desendent leaves
                 if node.color == trees.RED:
                     if node.left: 
                         self.assertEqual(node.left.color, trees.BLACK)
@@ -236,6 +251,7 @@ class TestRedBlackTree(unittest.TestCase):
                     self.assertNotEqual(node.parent, None)  # roots have no parent
                     self.assertEqual(node.parent.color, trees.BLACK)
 
+                # recurse down to each child
                 if node.left: 
                     _dfs_testproperty(node.left)
                 if node.right: 
