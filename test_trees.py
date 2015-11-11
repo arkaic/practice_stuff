@@ -10,9 +10,11 @@ RBT = 3
 ROOTS_LEFT_ANOMALIES = [8]
 ROOTS_RIGHT_ANOMALIES = [3, 10]
 
-SAMPLE_SIZE = 15
+SAMPLE_SIZE = 100
 
-class TestTrees(unittest.TestCase):
+B, R = trees.BLACK, trees.RED
+
+class TestBinarySearchTree(unittest.TestCase):
 
     def setUp(self):
         def _generate_connected_nodes(els, treetype):
@@ -23,7 +25,7 @@ class TestTrees(unittest.TestCase):
                 else:
                     if treetype == BST:
                         nodes.append(trees.Node(x))
-                    elif treetype == RBT:
+                    elif treetype == RBT:   # !!!!!!!!!!
                         nodes.append(trees.RedBlackNode(x[0], x[1]))
 
             # connect them
@@ -56,7 +58,7 @@ class TestTrees(unittest.TestCase):
                      None, None, 2, 9, None, None, 9, None]
         self.singlebst_element = [None, 8]
 
-        B, R = trees.BLACK, trees.RED
+        B, R = trees.BLACK, trees.RED  # !!!!!!!!!!!!!!!!!
         rb_els = [None, (11,B),
                   (2, R), (14, B),
                   (1, B), (7, B), None, (15, R),
@@ -182,14 +184,13 @@ class TestTrees(unittest.TestCase):
         """ Root is black, black depth is equal from every leaf,
         all red parents have black children
 
-        _dfs_testproperty() to recursively find leaves. Then for each leaf, recursively
-        to root to find black depth
+        _dfs_testproperty() tests redblack tree property for a given node
+        and recursively its children
         """
         def _dfs_testproperty(node):
             def _black_height(n):
                 if n.color == trees.BLACK:
-                    if n.parent: 
-                        # print('n={} p={}'.format(n.element, n.parent.element))
+                    if n.parent:
                         return 1 + _black_height(n.parent)
                     else: 
                         return 1
@@ -199,26 +200,25 @@ class TestTrees(unittest.TestCase):
             if not node.left and not node.right:
                 # assert black height of leaf
                 bh = _black_height(node)
-                # print('bh=' + str(bh))
                 if self.measured_bh is None: 
                     self.measured_bh = bh
                 self.assertEqual(bh, self.measured_bh)
-                # print("black height = {}".format(bh))
             else:
                 if node.color == trees.RED:
                     if node.left: 
                         self.assertEqual(node.left.color, trees.BLACK)
                     if node.right:
                         self.assertEqual(node.right.color, trees.BLACK)
-                    self.assertFalse(node is self.rbt.root)
-                    self.assertNotEqual(node.parent, None)  # can't be a root
+                    self.assertTrue(node is not self.rbt.root) # can't be a root
+                    self.assertNotEqual(node.parent, None)  # roots have no parent
                     self.assertEqual(node.parent.color, trees.BLACK)
 
                 if node.left: 
                     _dfs_testproperty(node.left)
                 if node.right: 
                     _dfs_testproperty(node.right)
-           
+        
+        print("+++++++++++++++++++++ Starting red black tree testing")
         # assert root is black
         self.assertEqual(self.rbt.root.color, trees.BLACK)
         
@@ -226,14 +226,12 @@ class TestTrees(unittest.TestCase):
             _dfs_testproperty(self.rbt.root)
 
         # TODO do insertions and deletions and then check the bh
-        # print("\n\nInserting new elements to RBT and printing\n{}\n".format(self.rbt))
-        elements_toinsert = [4, 3, 13, 6, 20, 30, 40]
+        elements_toinsert = [4, 3, 13, 6, 40, 20, 30]
         elements_toinsert = [4]
         for e in elements_toinsert:
             self.measured_bh = None
             self.rbt.insert(trees.RedBlackNode(e, trees.RED))
             _dfs_testproperty(self.rbt.root)
-            # print("inserting {}\n{}\n".format(e, self.rbt))
 
         # Insert numbers larger than rbt max until black height reaches threshold
         i = 50
@@ -243,7 +241,7 @@ class TestTrees(unittest.TestCase):
             self.rbt.insert(trees.RedBlackNode(i, trees.RED))
             _dfs_testproperty(self.rbt.root)
 
-        # Get actual height (preferring right due to previous loop)
+        # Get actual height of rbt by traversing it, preferring right children
         height = 0
         ptr = self.rbt.root
         while ptr:
@@ -261,10 +259,51 @@ class TestTrees(unittest.TestCase):
             r = random.randrange(0, 100)
             self.rbt.insert(trees.RedBlackNode(r, trees.RED))
             _dfs_testproperty(self.rbt.root)
-        # print("{}\n{}".format(self.rbt, self.rbt.count))
 
-    def test_rbtdelete(self): pass
+    def test_rbtdelete(self): 
+        pass
 
+
+class TestRedBlackTree(unittest.TestCase):
+
+    def setUp(self):
+        print("TestRedBlackTree setup")
+
+        def _generate_connected_nodes(els, treetype):
+            nodes = []
+            for i, x in enumerate(els):
+                if x is None:
+                    nodes.append(x)
+                else:
+                    nodes.append(trees.RedBlackNode(x[0], x[1]))
+
+            # connect them
+            for i, node in enumerate(nodes):
+                if node is not None:
+                    if i > 1: node.parent = nodes[int(i / 2)]
+                    if i * 2 < len(nodes): node.left = nodes[i * 2]
+                    if i * 2 + 1 < len(nodes): node.right = nodes[i * 2 + 1]
+
+            return nodes
+        # end nested function
+
+        #       8
+        #     /   \
+        #    3     10
+        #  /  \   /  \  
+        # 1    6      14
+        #/ \  / \    /
+        #     4  7  13
+        #    [2][9] [9]
+        B, R = trees.BLACK, trees.RED
+        rb_els = [None, (11,B),
+                  (2, R), (14, B),
+                  (1, B), (7, B), None, (15, R),
+                  None, None, (5, R), (8, R), None, None, None, None]
+
+
+    def test_rbtproperty(self):
+        print("Test red black tree properties")
 
 
 if __name__ == '__main__':
