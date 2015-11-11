@@ -11,26 +11,6 @@ class Node:
         self.right = right
 
 
-class RedBlackNode(Node):
-    """ Red/Black Notes
-    Properties: 
-      1. Black root
-      2. Leaves are None and considered Black, and all have same black depth
-      3. Red's children are black
-
-    Left Rotation: 
-    x=parent, y=right child. y lets go left, pulls its right up and above x and
-    connects to x as its new left, connecting x's older parent to itself. At the 
-    same time, x disconnects y (its right), drops down to connect to y's old left
-
-    left child -> right_rotate
-    right child -> left_rotate
-    """
-    def __init__(self, element, color, parent=None, left=None, right=None):
-        super().__init__(element, parent, left, right)
-        self.color = color
-
-
 class BinarySearchTree:
 
     def __init__(self, root=None):
@@ -171,6 +151,26 @@ class BinarySearchTree:
             s += el_str + '\n'
         s += '\nNode Count sans NILs = {}'.format(c)
         return s
+
+
+class RedBlackNode(Node):
+    """ Red/Black Notes
+    Properties: 
+      1. Black root
+      2. Leaves are None and considered Black, and all have same black depth
+      3. Red's children are black
+
+    Left Rotation: 
+    x=parent, y=right child. y lets go left, pulls its right up and above x and
+    connects to x as its new left, connecting x's older parent to itself. At the 
+    same time, x disconnects y (its right), drops down to connect to y's old left
+
+    left child -> right_rotate
+    right child -> left_rotate
+    """
+    def __init__(self, element, color, parent=None, left=None, right=None):
+        super().__init__(element, parent, left, right)
+        self.color = color
 
 
 class RedBlackTree(BinarySearchTree):
