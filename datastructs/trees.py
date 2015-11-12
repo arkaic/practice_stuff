@@ -71,6 +71,7 @@ class BinarySearchTree:
             return None
 
         replacement = None
+        rep_for_replacement = None
         if not node.right:
             if not node.left:
                 # Case 1: node is leaf
@@ -101,7 +102,8 @@ class BinarySearchTree:
         else:
             # Case 4 
             if not node.right.left:
-                # just use deleted node's right child as replacement
+                # just use deleted node's right child as replacement because it
+                # is the smallest node in right subtree
                 replacement = node.right
                 replacement.left = node.left
                 replacement.parent = node.parent
@@ -148,8 +150,7 @@ class BinarySearchTree:
         node.left = None
         node.parent = None
         self.count -= 1
-
-        return (node, replacement)
+        return (node, replacement, rep_for_replacement)
 
     def __str__(self):
         c = 0 
@@ -183,6 +184,7 @@ class RedBlackNode(Node):
       1. root property: Black root
       2. red property: RED nodes have BLACK children
       3. black property: Leaves are BLACK (None), and all have same black depth
+         a. From 3, can we say that red nodes CAN'T have one NON-NIL children?
 
     Left Rotation: 
     x=parent, y=right child. y lets go left, pulls its right up and above x, and y
@@ -242,10 +244,11 @@ class RedBlackTree(BinarySearchTree):
         nodes = super().delete(el)
         if not nodes: 
             return None
-        deleted, replacement = nodes
+        deleted, replacement, rep_for_replacement = nodes
 
+        print(self)  # TODO delete
         if replacement:
-            replacement.color = RED
+            replacement.color = deleted.color
             # TODO (unfinished?)
             self._balance(replacement)
 

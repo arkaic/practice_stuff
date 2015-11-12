@@ -159,7 +159,7 @@ class TestBinarySearchTree(unittest.TestCase):
         elements = [3, 7, 10]
         print(self.bst)
         for e in elements:
-            node, replacement = self.bst.delete(e)
+            node, replacement, repl_for_replacement = self.bst.delete(e)
             # print(node.element, "for", replacement.element)
             print(self.bst)
             if replacement:
@@ -191,7 +191,7 @@ class TestRedBlackTree(unittest.TestCase):
              (40,R), (90,R),
              (20,B), (50,B), (80,B), (100,B),
              (10,B), (30,R), (45,B), (55,B), (70,R), (85,B), (95,B), (105,B),
-             None,None,(25,B),(35,B),None,None,None,None,(65,B),(75,B),None,None,(94,R),None,(104,R),None]
+             None,None,(25,B),(35,B),None,None,None,None,(65,B),(75,B),None,None,None,(96,R),(104,R),None]
 
         # Generate a linked tree of Node objects
         rbnodes = self._generate_connected_nodes(rb_els)
@@ -255,7 +255,7 @@ class TestRedBlackTree(unittest.TestCase):
         print("\n********TEST REDBLACKTREE DELETE********")
         print(self.rbt)
 
-        self.rbt.delete(90)
+        # self.rbt.delete(90)
 
         self._dfs_test_rbt_property(self.rbt.root)
 
