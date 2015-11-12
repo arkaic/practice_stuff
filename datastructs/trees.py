@@ -155,7 +155,7 @@ class BinarySearchTree:
         c = 0 
         level = 1
         q = [self.root]
-        s = "************************\nP ---> N(L, R)\n"
+        s = "--------------------------\nP ---> N(L, R)\n"
         while q:
             n = q.pop(0)
             if n:
@@ -173,7 +173,7 @@ class BinarySearchTree:
             else:
                 el_str = 'NIL'
             s += el_str + '\n'
-        s += '\nNode Count sans NILs = {}\n************************'.format(c)
+        s += '\nNode Count sans NILs = {}\n--------------------------'.format(c)
         return s
 
 
@@ -244,7 +244,6 @@ class RedBlackTree(BinarySearchTree):
             return None
         deleted, replacement = nodes
 
-        print(self)
         if replacement:
             replacement.color = RED
             # TODO (unfinished?)
@@ -254,8 +253,6 @@ class RedBlackTree(BinarySearchTree):
         """ The rotations here are called either with the current x OR with its 
         grandparent """
         # Could find another way to retrieve element's node
-        print("balance", x.element)
-        print(self)
         if x is not self.search(x.element):
             raise Exception("Not supposed to happen")
 
