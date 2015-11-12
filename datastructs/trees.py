@@ -100,7 +100,6 @@ class BinarySearchTree:
             replacement = node.right
         else:
             # Case 4 
-
             if not node.right.left:
                 # just use deleted node's right child as replacement
                 replacement = node.right
@@ -111,7 +110,7 @@ class BinarySearchTree:
                     if node.parent.left == node:
                         node.parent.left = replacement
                     elif node.parent.right == node:
-                        node.parent.left = replacement
+                        node.parent.right = replacement
                     else: 
                         raise Exception("shouldn't happen")
             else:
@@ -255,7 +254,8 @@ class RedBlackTree(BinarySearchTree):
         """ The rotations here are called either with the current x OR with its 
         grandparent """
         # Could find another way to retrieve element's node
-        # print("balancing", x.element)
+        print("balance", x.element)
+        print(self)
         if x is not self.search(x.element):
             raise Exception("Not supposed to happen")
 
