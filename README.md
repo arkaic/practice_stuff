@@ -1,7 +1,9 @@
 Just a collection of practice problems and datastructure/algorithms implementations
 
 TODO: 
-- I should finish deletion in rb trees...
+- Red Black Tree Deletion Implementation status: not passing a test for the
+black property (specifically the one that cheks that all paths from any given
+node to any of its leaves should be the same black height)
 - Get back to that folding square problem I had wayyyy back
 
 (Implement a trie tree first before doing the below to make it easier)
