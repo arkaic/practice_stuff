@@ -186,10 +186,16 @@ class TestRedBlackTree(unittest.TestCase):
                   (2, R), (14, B),
                   (1, B), (7, B), None, (15, R),
                   None, None, (5, R), (8, R), None, None, None, None]
+        # rb_els = [
+        #      None, (60,B),
+        #      (40,R), (90,R),
+        #      (20,B), (50,B), (80,B), (100,B),
+        #      (10,B), (30,R), (45,B), (55,B), (70,R), (85,B), (95,B), (105,B),
+        #      None,None,(25,B),(35,B),None,None,None,None,(65,B),(75,B),None,None,None,None,None,None]
 
         # Generate a linked tree of Node objects
-        rbnodes = self._generate_connected_nodes(rb_els, RBT)
-        # wrong_rbnodes = self._generate_connected_nodes(self.wrongbst_elements, RBT)
+        rbnodes = self._generate_connected_nodes(rb_els)
+        # wrong_rbnodes = self._generate_connected_nodes(self.wrongbst_elements)
 
         # Create the RBTs (wrong RBTs break the property of RBTs)
         self.rbt = trees.RedBlackTree(root=rbnodes[1])
@@ -247,13 +253,18 @@ class TestRedBlackTree(unittest.TestCase):
 
     def test_rbtdelete(self):
         print("\n********TEST REDBLACKTREE DELETE********")
-        # todo make a new tree to test all possible cases of deletion
+        # make a new tree to test all possible cases of deletion
+        new_rbtelements = [
+             None,                    (60,B),
+                                  (40,R), (90,R),
+                          (20,B), (50,B), (80,B), (100,B),
+             (10,B), (30,R), (45,B), (55,B), (70,R), (85,B), (95,B), (105,B),
+             None,None,(25,B),(35,B),None,None,None,None,(65,B),(75,B),None,None,(93,R),None,None,None]
+        new_rbt = trees.RedBlackTree(root=self._generate_connected_nodes(new_rbtelements)[1])
 
-        print(self.rbt)
+        print(new_rbt)
 
-        # self.rbt.delete(8)
-        self.rbt.delete(7)
-        # self.rbt.delete(2)
+        # todo delete from newrbt
 
         self._dfs_test_rbt_property(self.rbt.root)
 
@@ -331,7 +342,7 @@ class TestRedBlackTree(unittest.TestCase):
             if node.right: 
                 self._dfs_test_rbt_property(node.right)
 
-    def _generate_connected_nodes(self, els, treetype):
+    def _generate_connected_nodes(self, els):
         nodes = []
         for i, x in enumerate(els):
             if x is None: nodes.append(x)
@@ -348,7 +359,7 @@ class TestRedBlackTree(unittest.TestCase):
 
 if __name__ == '__main__':
     unittest.main()
-    # u = TestRedBlackTree()
-    # u.setUp()
-    # u.test_rbtdelete()
+    u = TestRedBlackTree()
+    u.setUp()
+    u.test_rbtdelete()
 
