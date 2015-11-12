@@ -205,88 +205,14 @@ class TestRedBlackTree(unittest.TestCase):
     def test_rbtproperty(self):  #!!!!!!!!!!!!!!!
         """ Root is black, black depth is equal from every leaf,
         all red parents have black children
-
-        _dfs_testproperty() is a recursive function that tests redblack tree 
-        property for a given node and recursively its children
         """
         print("\n********TEST REDBLACKTREE PROPERTIES*******")
-
-
-        def _dfs_testproperty(node):
-            """ Recursive function with 2 nested recursive functions """
-
-            def _black_height(n):
-                """ recursively finds black height of a leaf """
-                if n.color == trees.BLACK:
-                    if n.parent:
-                        return 1 + _black_height(n.parent)
-                    else: 
-                        return 1
-                if n.parent: 
-                    return _black_height(n.parent)
-                else: 
-                    return 0
-
-            def _black_height_to_leaves(n):
-                """ Recursively checks if black heights to all of n's leaves are
-                the same. For any recursive call, it returns either the black 
-                height, or -1 if it finds that the node's children have 
-                mismatching black heights
-                """
-                if not n.left and not n.right:
-                    if n.color == B: return 1
-                    else: return 0
-                
-                leftsum = rightsum = 0
-                if n.left:
-                    # recurse for resulting sum
-                    leftsum = _black_height_to_leaves(n.left)
-                if n.right:
-                    rightsum = _black_height_to_leaves(n.right)
-
-                if leftsum != rightsum or leftsum == -1 or rightsum == -1:
-                    return -1
-                else:
-                    # when both children's bh's are equal, pass this up, depending
-                    # on the current node's color
-                    if n.color == B:
-                        return 1 + leftsum
-                    else:
-                        return leftsum
-
-            # DFS nodes down to leaves, then call _black_height on leaf
-            if not node.left and not node.right:
-                # assert black height of leaf
-                bh = _black_height(node)
-                if self.measured_bh is None: 
-                    self.measured_bh = bh
-                self.assertEqual(bh, self.measured_bh)
-            else:
-                # assert properties of each node
-                # assert that each node has the same black height to ANY of its
-                # desendent leaves
-                if node.color == trees.RED:
-                    if node.left: 
-                        self.assertEqual(node.left.color, trees.BLACK)
-                    if node.right:
-                        self.assertEqual(node.right.color, trees.BLACK)
-                    self.assertTrue(node is not self.rbt.root) # can't be a root
-                    self.assertNotEqual(node.parent, None)  # roots have no parent
-                    self.assertEqual(node.parent.color, trees.BLACK)
-
-                self.assertNotEqual(_black_height_to_leaves(node), -1)
-
-                # recurse down to each child
-                if node.left: 
-                    _dfs_testproperty(node.left)
-                if node.right: 
-                    _dfs_testproperty(node.right)
         
         # assert root is black
         self.assertEqual(self.rbt.root.color, trees.BLACK)
         
         if self.rbt.root: 
-            _dfs_testproperty(self.rbt.root)
+            self._dfs_test_rbt_property(self.rbt.root)
 
         # TODO do insertions and deletions and then check the bh
         elements_toinsert = [4, 3, 13, 6, 40, 20, 30]
@@ -294,7 +220,7 @@ class TestRedBlackTree(unittest.TestCase):
         for e in elements_toinsert:
             self.measured_bh = None
             self.rbt.insert(trees.RedBlackNode(e, trees.RED))
-            _dfs_testproperty(self.rbt.root)
+            self._dfs_test_rbt_property(self.rbt.root)
 
         # Insert numbers larger than rbt max until black height reaches threshold
         i = 50
@@ -302,7 +228,7 @@ class TestRedBlackTree(unittest.TestCase):
             self.measured_bh = None
             i += 1
             self.rbt.insert(trees.RedBlackNode(i, trees.RED))
-            _dfs_testproperty(self.rbt.root)
+            self._dfs_test_rbt_property(self.rbt.root)
 
         # Get actual height of rbt by traversing it, preferring right children
         height = 0
@@ -320,11 +246,84 @@ class TestRedBlackTree(unittest.TestCase):
             self.measured_bh = None
             r = random.randrange(0, 100)
             self.rbt.insert(trees.RedBlackNode(r, trees.RED))
-            _dfs_testproperty(self.rbt.root)
+            self._dfs_test_rbt_property(self.rbt.root)
 
     def test_rbtdelete(self):
         print("\n********TEST REDBLACKTREE DELETE********")
         pass
+
+    def _dfs_test_rbt_property(self, node):
+        """ A recursive function that tests redblack tree property for a given 
+        node and recursively its children. Utilizes two nested recursive 
+        functions for this task
+        """
+
+        def _black_height(n):
+            """ recursively finds black height of a leaf """
+            if n.color == trees.BLACK:
+                if n.parent:
+                    return 1 + _black_height(n.parent)
+                else: 
+                    return 1
+            if n.parent: 
+                return _black_height(n.parent)
+            else: 
+                return 0
+
+        def _black_height_to_leaves(n):
+            """ Recursively checks if black heights to all of n's leaves are
+            the same. For any recursive call, it returns either the black 
+            height, or -1 if it finds that the node's children have 
+            mismatching black heights
+            """
+            if not n.left and not n.right:
+                if n.color == B: return 1
+                else: return 0
+            
+            leftsum = rightsum = 0
+            if n.left:
+                # recurse for resulting sum
+                leftsum = _black_height_to_leaves(n.left)
+            if n.right:
+                rightsum = _black_height_to_leaves(n.right)
+
+            if leftsum != rightsum or leftsum == -1 or rightsum == -1:
+                return -1
+            else:
+                # when both children's bh's are equal, pass this up, depending
+                # on the current node's color
+                if n.color == B:
+                    return 1 + leftsum
+                else:
+                    return leftsum
+
+        # DFS nodes down to leaves, then call _black_height on leaf
+        if not node.left and not node.right:
+            # assert black height of leaf
+            bh = _black_height(node)
+            if self.measured_bh is None: 
+                self.measured_bh = bh
+            self.assertEqual(bh, self.measured_bh)
+        else:
+            # assert properties of each node
+            # assert that each node has the same black height to ANY of its
+            # desendent leaves
+            if node.color == trees.RED:
+                if node.left: 
+                    self.assertEqual(node.left.color, trees.BLACK)
+                if node.right:
+                    self.assertEqual(node.right.color, trees.BLACK)
+                self.assertTrue(node is not self.rbt.root) # can't be a root
+                self.assertNotEqual(node.parent, None)  # roots have no parent
+                self.assertEqual(node.parent.color, trees.BLACK)
+
+            self.assertNotEqual(_black_height_to_leaves(node), -1)
+
+            # recurse down to each child
+            if node.left: 
+                self._dfs_test_rbt_property(node.left)
+            if node.right: 
+                self._dfs_test_rbt_property(node.right)
 
 
 if __name__ == '__main__':
