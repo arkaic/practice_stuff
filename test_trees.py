@@ -182,16 +182,16 @@ class TestRedBlackTree(unittest.TestCase):
         # redblack elements. Because tree is binary, I need the first elemen 
         # to be None so I can easily assign children/parents to nodes in
         # the nested function above
-        rb_els = [None, (11,B),
-                  (2, R), (14, B),
-                  (1, B), (7, B), None, (15, R),
-                  None, None, (5, R), (8, R), None, None, None, None]
-        # rb_els = [
-        #      None, (60,B),
-        #      (40,R), (90,R),
-        #      (20,B), (50,B), (80,B), (100,B),
-        #      (10,B), (30,R), (45,B), (55,B), (70,R), (85,B), (95,B), (105,B),
-        #      None,None,(25,B),(35,B),None,None,None,None,(65,B),(75,B),None,None,None,None,None,None]
+        # rb_els = [None, (11,B),
+        #           (2, R), (14, B),
+        #           (1, B), (7, B), None, (15, R),
+        #           None, None, (5, R), (8, R), None, None, None, None]
+        rb_els = [
+             None, (60,B),
+             (40,R), (90,R),
+             (20,B), (50,B), (80,B), (100,B),
+             (10,B), (30,R), (45,B), (55,B), (70,R), (85,B), (95,B), (105,B),
+             None,None,(25,B),(35,B),None,None,None,None,(65,B),(75,B),None,None,(94,R),None,(104,R),None]
 
         # Generate a linked tree of Node objects
         rbnodes = self._generate_connected_nodes(rb_els)
@@ -253,21 +253,11 @@ class TestRedBlackTree(unittest.TestCase):
 
     def test_rbtdelete(self):
         print("\n********TEST REDBLACKTREE DELETE********")
-        # make a new tree to test all possible cases of deletion
-        new_rbtelements = [
-             None,                    (60,B),
-                                  (40,R), (90,R),
-                          (20,B), (50,B), (80,B), (100,B),
-             (10,B), (30,R), (45,B), (55,B), (70,R), (85,B), (95,B), (105,B),
-             None,None,(25,B),(35,B),None,None,None,None,(65,B),(75,B),None,None,(93,R),None,None,None]
-        new_rbt = trees.RedBlackTree(root=self._generate_connected_nodes(new_rbtelements)[1])
+        print(self.rbt)
 
-        print(new_rbt)
-
-        # todo delete from newrbt
+        self.rbt.delete(90)
 
         self._dfs_test_rbt_property(self.rbt.root)
-
 
     def _dfs_test_rbt_property(self, node):
         """ A recursive function that tests redblack tree property for a given 
@@ -359,7 +349,7 @@ class TestRedBlackTree(unittest.TestCase):
 
 if __name__ == '__main__':
     unittest.main()
-    u = TestRedBlackTree()
-    u.setUp()
-    u.test_rbtdelete()
+    # u = TestRedBlackTree()
+    # u.setUp()
+    # u.test_rbtdelete()
 
