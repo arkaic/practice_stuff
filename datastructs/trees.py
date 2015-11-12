@@ -156,14 +156,22 @@ class BinarySearchTree:
 class RedBlackNode(Node):
     """ Red/Black Notes
     Properties: 
-      1. Black root
-      2. Leaves are None and considered Black, and all have same black depth
-      3. Red's children are black
+      1. root property: Black root
+      2. red property: RED nodes have BLACK children
+      3. black property: Leaves are BLACK (None), and all have same black depth
 
     Left Rotation: 
-    x=parent, y=right child. y lets go left, pulls its right up and above x and
+    x=parent, y=right child. y lets go left, pulls its right up and above x, and y
     connects to x as its new left, connecting x's older parent to itself. At the 
     same time, x disconnects y (its right), drops down to connect to y's old left
+
+      p              p
+     /              /
+    x              y
+     \      --->  / \
+      y          x   R
+     / \          \
+    L   R          L
 
     left child -> right_rotate
     right child -> left_rotate
@@ -174,15 +182,21 @@ class RedBlackNode(Node):
 
 
 class RedBlackTree(BinarySearchTree):
+    """ NIL leaves are None """
 
     def __init__(self, root=None):
         super().__init__(root)
 
     # @Override
     def insert(self, node):
+        """ All nodes are inserted as red, except if the node is the first
+        node added in for the tree """
         if not hasattr(node, 'color'):
             # could make this more robust?
             raise AttributeError("Node provided is not a RedBlackNode")
+
+        if self.count == 0: node.color = BLACK
+        else: node.color = RED
         if super().insert(node):
             self._balance(node)
 
@@ -200,30 +214,35 @@ class RedBlackTree(BinarySearchTree):
         if black deleted and subbed with black, balance starting at the subtree
         if black deleted and subbed with red, balance at substituted node
         """
-        nodes = super().delete(el)
-        if not nodes: return None
 
+        # TODO implement (unfinished?)
+        nodes = super().delete(el)
+        if not nodes: 
+            return None
         deleted, replacement = nodes
         replacement.color = RED
         self._balance(replacement)
 
-
-
     def _balance(self, x):
+        """ The rotations here are called either with the current x OR with its 
+        grandparent """
         # Could find another way to retrieve element's node
         if x is not self.search(x.element):
             raise Exception("Not supposed to happen")
 
-        # Assuming x is red
+        # Node x will be constantly reassigned, thus this while loop.
+        # loop continues until current node doesn't break red property
         while x is not self.root and x.color == RED and x.parent.color == RED:
             if not x.parent.parent:
-                raise Exception("Test exception: root is red and is x's parent in this iteration of rb algorithm")
+                raise Exception("Test exception: root is red and is x's parent" + 
+                    "in this iteration of rb algorithm")
 
-            # x.parent's color is RED, so it will never be a root. Thus, x has a grandparent
+            # x.parent's color is RED, so it will never be a root. Thus, x has 
+            # a grandparent, and why there is no null check here for the gp
             if x.parent is x.parent.parent.left:
+                # x's parent is a left child
                 uncle = x.parent.parent.right
                 if not uncle or uncle.color == BLACK:
-                    # uncle may be NIL or he is black
                     if x is x.parent.right:
                         x = x.parent
                         self._left_rotate(x)
@@ -231,7 +250,8 @@ class RedBlackTree(BinarySearchTree):
                     x.parent.parent.color = RED
                     self._right_rotate(x.parent.parent)  # gives x a red parent
                 else:
-                    # uncle exists and color is red
+                    # uncle exists and it's red, so we're just going to make both
+                    # parent and uncle black and grandparent red. Reassign x to gp
                     x.parent.color = BLACK
                     uncle.color = BLACK
                     x.parent.parent.color = RED
@@ -244,6 +264,7 @@ class RedBlackTree(BinarySearchTree):
                 if not uncle or uncle.color == BLACK:
                     # uncle may be NIL or he is black
                     if x is x.parent.left:
+                        # if x is left child
                         x = x.parent
                         self._right_rotate(x)
                     x.parent.color = BLACK
@@ -261,6 +282,7 @@ class RedBlackTree(BinarySearchTree):
         self.root.color = BLACK
 
     def _left_rotate(self, x):
+        """ x = parent; y = right child """
         y = x.right
         if x.parent:
             if x.parent.left is x: x.parent.left = y
@@ -279,6 +301,7 @@ class RedBlackTree(BinarySearchTree):
         y.left = x
 
     def _right_rotate(self, x):
+        """ x = parent; y = left child """
         y = x.left
         if x.parent:
             if x.parent.right is x: x.parent.right = y
