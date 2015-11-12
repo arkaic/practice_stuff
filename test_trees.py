@@ -47,7 +47,7 @@ class TestBinarySearchTree(unittest.TestCase):
         # Test case elements. 
         self.bst_elements = [None, 8, 
                3, 10, 
-               1, 6, None, 14, 
+               1, 6, 9, 14, 
                None, None, 4, 7, None, None, 13, None]
         self.wrongbst_elements = [None, 8, 
                      3, 10, 
@@ -154,33 +154,30 @@ class TestBinarySearchTree(unittest.TestCase):
         # self.assertEqual(self.bst.count, 0)  # hack to see if dfs was looking through everything
         # _dfs_all(self.wrongbst.root)   # this will assert false
 
+    def test_bstdelete(self):
+        print("\n********TEST B.S. TREE DELETE*******")
+        elements = [3, 7, 10]
+        print(self.bst)
+        for e in elements:
+            node, replacement = self.bst.delete(e)
+            # print(node.element, "for", replacement.element)
+            print(self.bst)
+            if replacement:
+                self.assertTrue(self.bst.search(replacement.element) is not None, e)
+
 
 class TestRedBlackTree(unittest.TestCase):
 
     def setUp(self):
-        def _generate_connected_nodes(els, treetype):
-            nodes = []
-            for i, x in enumerate(els):
-                if x is None: nodes.append(x)
-                else: nodes.append(trees.RedBlackNode(x[0], x[1]))
-
-            # connect them
-            for i, node in enumerate(nodes):
-                if node is not None:
-                    if i > 1: node.parent = nodes[int(i / 2)]
-                    if i * 2 < len(nodes): node.left = nodes[i * 2]
-                    if i * 2 + 1 < len(nodes): node.right = nodes[i * 2 + 1]
-            return nodes
         # END
 
         #       11
         #     /   \
-        #    2     14
+        #    2R    14
         #  /  \   /  \  
-        # 1   7      15
+        # 1   7     15R
         #/ \ / \    / \
-        #    5  8  
-        #    [2][9] [9]
+        #    5R 8R
 
         # redblack elements. Because tree is binary, I need the first elemen 
         # to be None so I can easily assign children/parents to nodes in
@@ -191,8 +188,8 @@ class TestRedBlackTree(unittest.TestCase):
                   None, None, (5, R), (8, R), None, None, None, None]
 
         # Generate a linked tree of Node objects
-        rbnodes = _generate_connected_nodes(rb_els, RBT)
-        # wrong_rbnodes = _generate_connected_nodes(self.wrongbst_elements, RBT)
+        rbnodes = self._generate_connected_nodes(rb_els, RBT)
+        # wrong_rbnodes = self._generate_connected_nodes(self.wrongbst_elements, RBT)
 
         # Create the RBTs (wrong RBTs break the property of RBTs)
         self.rbt = trees.RedBlackTree(root=rbnodes[1])
@@ -202,7 +199,7 @@ class TestRedBlackTree(unittest.TestCase):
         # self.wrongrbt = trees.RedBlackTree(root=wrong_rbnodes[1])
         # self.wrongrbt.count = 9
 
-    def test_rbtproperty(self):  #!!!!!!!!!!!!!!!
+    def test_rbtproperty(self):
         """ Root is black, black depth is equal from every leaf,
         all red parents have black children
         """
@@ -250,7 +247,16 @@ class TestRedBlackTree(unittest.TestCase):
 
     def test_rbtdelete(self):
         print("\n********TEST REDBLACKTREE DELETE********")
-        pass
+        # todo make a new tree to test all possible cases of deletion
+
+        print(self.rbt)
+
+        # self.rbt.delete(8)
+        self.rbt.delete(7)
+        # self.rbt.delete(2)
+
+        self._dfs_test_rbt_property(self.rbt.root)
+
 
     def _dfs_test_rbt_property(self, node):
         """ A recursive function that tests redblack tree property for a given 
@@ -325,7 +331,24 @@ class TestRedBlackTree(unittest.TestCase):
             if node.right: 
                 self._dfs_test_rbt_property(node.right)
 
+    def _generate_connected_nodes(self, els, treetype):
+        nodes = []
+        for i, x in enumerate(els):
+            if x is None: nodes.append(x)
+            else: nodes.append(trees.RedBlackNode(x[0], x[1]))
+
+        # connect them
+        for i, node in enumerate(nodes):
+            if node is not None:
+                if i > 1: node.parent = nodes[int(i / 2)]
+                if i * 2 < len(nodes): node.left = nodes[i * 2]
+                if i * 2 + 1 < len(nodes): node.right = nodes[i * 2 + 1]
+        return nodes
+
 
 if __name__ == '__main__':
     unittest.main()
+    # u = TestRedBlackTree()
+    # u.setUp()
+    # u.test_rbtdelete()
 
