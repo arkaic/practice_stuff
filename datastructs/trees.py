@@ -23,9 +23,12 @@ class BinarySearchTree:
     
     def search(self, el):
         def _dfs(node):
-            if not node or el == node.element: return node
-            elif el < node.element: return _dfs(node.left)
-            else: return _dfs(node.right)
+            if not node or el == node.element: 
+                return node
+            elif el < node.element: 
+                return _dfs(node.left)
+            else: 
+                return _dfs(node.right)
         return _dfs(self.root)
 
     def insert(self, node):
@@ -59,7 +62,8 @@ class BinarySearchTree:
         Case 1: Node is leaf
         Case 2: Node has left child only
         Case 3: Node has right child only
-        Case 4: Node has both children
+        Case 4: Node has both children --> replace with smallest node in right
+                subtree
         """
         node = self.search(el)
 
@@ -96,29 +100,50 @@ class BinarySearchTree:
             replacement = node.right
         else:
             # Case 4 
-            # Get smallest node in right subtree
-            subtree_node = node.right
-            while subtree_node.left:
-                subtree_node = subtree_node.left
 
-            if subtree_node == node.right:
-                # just have subtree node take node's place
-                subtree_node.parent = node.parent
-                subtree_node.left = node.left
-                node.left.parent = subtree_node
+            if not node.right.left:
+                # just use deleted node's right child as replacement
+                replacement = node.right
+                replacement.left = node.left
+                replacement.parent = node.parent
+                replacement.left.parent = replacement
+                if node.parent:
+                    if node.parent.left == node:
+                        node.parent.left = replacement
+                    elif node.parent.right == node:
+                        node.parent.left = replacement
+                    else: 
+                        raise Exception("shouldn't happen")
             else:
-                # connect subtree node's right child to subtree node's parent
-                # substitute subtree node in place of the node to be deleted
-                if subtree_node.right:
-                    subtree_node.right.parent = subtree_node.parent
-                    subtree_node.parent.left = subtree_node.right
-                subtree_node.parent = node.parent
-                subtree_node.left = node.left
-                subtree_node.right = node.right
+                # Get smallest node in right subtree for replacement
+                replacement = node.right
+                while replacement.left:
+                    replacement = replacement.left
 
-            replacement = subtree_node
-            if subtree_node.parent is None:
-                self.root = subtree_node
+                # update references of old neighbors of replacement
+                replacement.parent.left = replacement.right
+                if replacement.right:
+                    replacement.right.parent = replacement.parent
+
+                # update replacement's refs
+                replacement.left = node.left
+                replacement.right = node.right
+                replacement.parent = node.parent
+
+                # update replacement's new left's and right's parent refs
+                replacement.left.parent = replacement
+                replacement.right.parent = replacement
+
+                # update deleted node's parent's child ref to replacement
+                if node == node.parent.left:
+                    node.parent.left = replacement
+                elif node == node.parent.right:
+                    node.parent.right = replacement
+                else: 
+                    raise Exception("shouldn't happen")
+
+            if replacement.parent is None:
+                self.root = replacement
 
         node.right = None
         node.left = None
@@ -131,7 +156,7 @@ class BinarySearchTree:
         c = 0 
         level = 1
         q = [self.root]
-        s = "P ---> N(L, R)\n"
+        s = "************************\nP ---> N(L, R)\n"
         while q:
             n = q.pop(0)
             if n:
@@ -149,7 +174,7 @@ class BinarySearchTree:
             else:
                 el_str = 'NIL'
             s += el_str + '\n'
-        s += '\nNode Count sans NILs = {}'.format(c)
+        s += '\nNode Count sans NILs = {}\n************************'.format(c)
         return s
 
 
@@ -219,10 +244,11 @@ class RedBlackTree(BinarySearchTree):
         if not nodes: 
             return None
         deleted, replacement = nodes
+
+        print(self)
         if replacement:
             replacement.color = RED
             # TODO (unfinished?)
-            # print("replacement:", replacement.element)
             self._balance(replacement)
 
     def _balance(self, x):
