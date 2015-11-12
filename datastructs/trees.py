@@ -74,13 +74,13 @@ class BinarySearchTree:
         rep_for_replacement = None
         if not node.right:
             if not node.left:
-                # Case 1: node is leaf
+                # Case 1: node is leaf          #(1,0,0)
                 if node.element > node.parent.element:
                     node.parent.right = None
                 else:
                     node.parent.left = None
             else:
-                # Case 2: node has left only
+                # Case 2: node has left only    #(1,1,0)
                 node.left.parent = node.parent
                 if node is node.parent.right:
                     node.parent.right = node.left
@@ -88,9 +88,9 @@ class BinarySearchTree:
                     node.parent.left = node.left
                 else:
                     raise Exception("shouldn't happen")
-                replacement = node.left
+                replacement = node.left       
         elif not node.left:
-            # Case 3: node has right only
+            # Case 3: node has right only       #(1,1,0)
             node.right.parent = node.parent
             if node is node.parent.right:
                 node.parent.right = node.right
@@ -100,10 +100,10 @@ class BinarySearchTree:
                 raise Exception("shouldn't happen")
             replacement = node.right
         else:
-            # Case 4 
+            # Case 4: node is internal
             if not node.right.left:
                 # just use deleted node's right child as replacement because it
-                # is the smallest node in right subtree
+                # is the smallest node in right subtree     #(1,1,0)
                 replacement = node.right
                 replacement.left = node.left
                 replacement.parent = node.parent
@@ -116,7 +116,7 @@ class BinarySearchTree:
                     else: 
                         raise Exception("shouldn't happen")
             else:
-                # Get smallest node in right subtree for replacement
+                # Get smallest node in right subtree for replacement #(1,1,1)
                 replacement = node.right
                 while replacement.left:
                     replacement = replacement.left
@@ -124,7 +124,8 @@ class BinarySearchTree:
                 # update references of old neighbors of replacement
                 replacement.parent.left = replacement.right
                 if replacement.right:
-                    replacement.right.parent = replacement.parent
+                    rep_for_replacement = replacement.right
+                    rep_for_replacement.parent = replacement.parent
 
                 # update replacement's refs
                 replacement.left = node.left
@@ -247,6 +248,27 @@ class RedBlackTree(BinarySearchTree):
         deleted, replacement, rep_for_replacement = nodes
 
         print(self)  # TODO delete
+
+        # let v be node to be deleted and u be its replacement.
+        # We can just consider cases where a leaf or a node with one child is
+        # deleted. In the internal node case, it just gets replaced with the 
+        # replacement, and then replacement becomes v, and rep_for_rep is u,
+        # so we can ignore that case.
+        # 
+        # Two cases spring from the above:
+        # Simple case: u or v is red  (NIL leaves are considered black)
+        # Non-simple case: u and v is black
+
+        u = v = None
+        if rep_for_replacement:
+            u = rep_for_replacement
+            v = replacement
+        else:
+            v = deleted
+            u = replacement
+
+        if rep_for_replacement:
+            rep_for_replacement.color = BLACK
         if replacement:
             replacement.color = deleted.color
             # TODO (unfinished?)
