@@ -215,18 +215,21 @@ class RedBlackTree(BinarySearchTree):
         if black deleted and subbed with red, balance at substituted node
         """
 
-        # TODO implement (unfinished?)
         nodes = super().delete(el)
         if not nodes: 
             return None
         deleted, replacement = nodes
-        replacement.color = RED
-        self._balance(replacement)
+        if replacement:
+            replacement.color = RED
+            # TODO (unfinished?)
+            # print("replacement:", replacement.element)
+            self._balance(replacement)
 
     def _balance(self, x):
         """ The rotations here are called either with the current x OR with its 
         grandparent """
         # Could find another way to retrieve element's node
+        # print("balancing", x.element)
         if x is not self.search(x.element):
             raise Exception("Not supposed to happen")
 
