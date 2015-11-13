@@ -101,10 +101,11 @@ class BinarySearchTree:
             replacement = node.right
         else:
             # Case 4: node is internal
-            if not node.right.left:
-                # just use deleted node's right child as replacement because it
-                # is the smallest node in right subtree     #(1,1,0)
-                replacement = node.right
+            replacement = node.right
+            if not replacement.left:
+                # use deleted node's immediate right child as replacement because it
+                # is the smallest node in right subtree   #(1,1,1) or 1,1,-1
+                # (v is rep, u is )
                 replacement.left = node.left
                 replacement.parent = node.parent
                 replacement.left.parent = replacement
@@ -115,17 +116,21 @@ class BinarySearchTree:
                         node.parent.right = replacement
                     else: 
                         raise Exception("shouldn't happen")
+                rep_for_replacement = replacement.right
+                if not rep_for_replacement:
+                    rep_for_replacement = -1  # hack
             else:
-                # Get smallest node in right subtree for replacement #(1,1,1)
-                replacement = node.right
+                # Get smallest node in right subtree for replacement 
                 while replacement.left:
                     replacement = replacement.left
 
                 # update references of old neighbors of replacement
                 replacement.parent.left = replacement.right
-                if replacement.right:
+                if replacement.right:    #(1,1,1)
                     rep_for_replacement = replacement.right
                     rep_for_replacement.parent = replacement.parent
+                else:                    #(1,1,-1)
+                    rep_for_replacement = -1   # hack 
 
                 # update replacement's refs
                 replacement.left = node.left
@@ -260,19 +265,28 @@ class RedBlackTree(BinarySearchTree):
         # Non-simple case: u and v is black
 
         u = v = None
-        if rep_for_replacement:
-            u = rep_for_replacement
-            v = replacement
-        else:
-            v = deleted
+        if not rep_for_replacement:
             u = replacement
+            v = deleted
+        else:
+            u = rep_for_replacement
+            if u == -1:
+                u = None
+            v = replacement
 
+        # todo may change this because it's solely for simple case
+        if u:
+            u.color = BLACK
+
+        # If the replacement for the replacement had a value to it (-1 as my 
+        # hack or a node), then we know the original deletion happened for an 
+        # internal node. Hence, its replacement must be changed to the internal
+        # node's original color.
         if rep_for_replacement:
-            rep_for_replacement.color = BLACK
-        if replacement:
             replacement.color = deleted.color
-            # TODO (unfinished?)
-            self._balance(replacement)
+
+        # TODO unfinished
+        self._balance(replacement)
 
     def _balance(self, x):
         """ The rotations here are called either with the current x OR with its 
