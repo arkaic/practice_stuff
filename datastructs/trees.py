@@ -274,6 +274,10 @@ class RedBlackTree(BinarySearchTree):
                 u = None
             v = replacement
 
+        is_simple_case = False
+        if v.color is RED or (u is not None and u.color is RED):
+            is_simple_case = True
+
         # todo may change this because it's solely for simple case
         if u:
             u.color = BLACK
@@ -286,7 +290,8 @@ class RedBlackTree(BinarySearchTree):
             replacement.color = deleted.color
 
         # TODO unfinished
-        self._balance(replacement)
+        if not is_simple_case:
+            self._balance(replacement)
 
     def _balance(self, x):
         """ The rotations here are called either with the current x OR with its 
