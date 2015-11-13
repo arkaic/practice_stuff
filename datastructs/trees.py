@@ -262,7 +262,9 @@ class RedBlackTree(BinarySearchTree):
         # 
         # Two cases spring from the above:
         # Simple case: u or v is red  (NIL leaves are considered black)
-        # Non-simple case: u and v is black
+        # Non-simple case: u and v is black, but due to black property, implies
+        # that we only need to look at black leaves? Also implies these black leaves
+        # have siblings.
 
         u = v = None
         if not rep_for_replacement:
@@ -279,8 +281,7 @@ class RedBlackTree(BinarySearchTree):
             is_simple_case = True
 
         # todo may change this because it's solely for simple case
-        if u:
-            u.color = BLACK
+        if u: u.color = BLACK
 
         # If the replacement for the replacement had a value to it (-1 as my 
         # hack or a node), then we know the original deletion happened for an 
