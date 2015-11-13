@@ -247,52 +247,55 @@ class RedBlackTree(BinarySearchTree):
         if black deleted and subbed with red, balance at substituted node
         """
 
+        # Delete just like in a binary tree
         nodes = super().delete(el)
         if not nodes: 
             return None
+        print(self)  # TODO delete this
+
+        # If the replacement for the replacement has a value (my hack, a -1,
+        # or a node), then we know the original deletion happened for an 
+        # internal node. Hence, its replacement must be changed to the internal
+        # node's original color.
         deleted, replacement, rep_for_replacement = nodes
+        if rep_for_replacement:
+            replacement.color = deleted.color
 
-        print(self)  # TODO delete
-
-        # let v be node to be deleted and u be its replacement.
         # We can just consider cases where a leaf or a node with one child is
-        # deleted. In the internal node case, it just gets replaced with the 
-        # replacement, and then replacement becomes v, and rep_for_rep is u,
-        # so we can ignore that case.
-        # 
-        # Two cases spring from the above:
-        # Simple case: u or v is red  (NIL leaves are considered black)
-        # Non-simple case: u and v is black, but due to black property, implies
-        # that we only need to look at black leaves? Also implies these black leaves
-        # have siblings.
-
+        # deleted. In the case where an internal node gets deleted, it just gets
+        # replaced with its replacement, and then we have to consider deleting THAT
+        # replacement. Since that replacement is the smallest node in the internal
+        # node's right child's subtree, the replacement will always be either a
+        # leaf or a node with just a right child. Thus, this third case reduces
+        # back to the first two cases.
+        # Let v be the node that was deleted and u be its replacement.
         u = v = None
         if not rep_for_replacement:
             u = replacement
             v = deleted
         else:
             u = rep_for_replacement
-            if u == -1:
+            # my hack if the replacement was a leaf and does not get replaced
+            if u == -1:  
                 u = None
             v = replacement
-
+ 
+        # Two resultant cases on how to handle rebalancing the red black tree
+        # spring from the above:
+        # Simple case: u or v is red  (NIL leaves are considered black)
+        # Non-simple case: u and v is black, but due to black property, implies
+        # that we only need to look at black leaves? Also implies these black leaves
+        # have siblings.
         is_simple_case = False
         if v.color is RED or (u is not None and u.color is RED):
             is_simple_case = True
-
-        # todo may change this because it's solely for simple case
-        if u: u.color = BLACK
-
-        # If the replacement for the replacement had a value to it (-1 as my 
-        # hack or a node), then we know the original deletion happened for an 
-        # internal node. Hence, its replacement must be changed to the internal
-        # node's original color.
-        if rep_for_replacement:
-            replacement.color = deleted.color
-
-        # TODO unfinished
-        if not is_simple_case:
+        if is_simple_case:            
+            if u: 
+                u.color = BLACK
             self._balance(replacement)
+        else:
+            # TODO implement the hard case
+            pass
 
     def _balance(self, x):
         """ The rotations here are called either with the current x OR with its 
