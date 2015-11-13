@@ -289,12 +289,14 @@ class RedBlackTree(BinarySearchTree):
         is_simple_case = False
         if v.color is RED or (u is not None and u.color is RED):
             is_simple_case = True
+
+        # Handle resultant cases
         if is_simple_case:            
             if u: 
                 u.color = BLACK
-            self._balance(replacement)
         else:
             # TODO implement the hard case
+            # self._balance(replacement)
             pass
 
     def _balance(self, x):
