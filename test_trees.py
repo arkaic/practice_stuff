@@ -193,16 +193,12 @@ class TestRedBlackTree(unittest.TestCase):
              (10,B), (30,R), (45,B), (55,B), (70,R), (85,B), (95,B), (105,B),
              None,None,(25,B),(35,B),None,None,None,None,(65,B),(75,B),None,None,None,(96,R),(104,R),None]
 
-        # Generate a linked tree of Node objects
-        rbnodes = self._generate_connected_nodes(rb_els)
-        # wrong_rbnodes = self._generate_connected_nodes(self.wrongbst_elements)
-
         # Create the RBTs (wrong RBTs break the property of RBTs)
-        self.rbt = trees.RedBlackTree(root=rbnodes[1])
+        self.rbt = self._make_redblacktree(rb_els)
         self.rbt.count = 9
         self.initial_bh_rbt = 2
         self.measured_bh = None
-        # self.wrongrbt = trees.RedBlackTree(root=wrong_rbnodes[1])
+        # self.wrongrbt = self._make_redblacktree(self.wrongbst_elements)
         # self.wrongrbt.count = 9
 
     def test_rbtproperty(self):
@@ -255,8 +251,14 @@ class TestRedBlackTree(unittest.TestCase):
         print("\n********TEST REDBLACKTREE DELETE********")
         print(self.rbt)
 
-        # self.rbt.delete(90)
+        self.rbt.delete(90)
 
+        self._dfs_test_rbt_property(self.rbt.root)
+
+    def custom_test_rbtdelete_simplecase(self, el):
+        print("\n********CUSTOM TEST REDBLACKTREE DELETE SIMPLE CASE********")
+        print(self.rbt)
+        self.rbt.delete(el)
         self._dfs_test_rbt_property(self.rbt.root)
 
     def _dfs_test_rbt_property(self, node):
@@ -332,7 +334,7 @@ class TestRedBlackTree(unittest.TestCase):
             if node.right: 
                 self._dfs_test_rbt_property(node.right)
 
-    def _generate_connected_nodes(self, els):
+    def _make_redblacktree(self, els):
         nodes = []
         for i, x in enumerate(els):
             if x is None: nodes.append(x)
@@ -344,12 +346,17 @@ class TestRedBlackTree(unittest.TestCase):
                 if i > 1: node.parent = nodes[int(i / 2)]
                 if i * 2 < len(nodes): node.left = nodes[i * 2]
                 if i * 2 + 1 < len(nodes): node.right = nodes[i * 2 + 1]
-        return nodes
+        return trees.RedBlackTree(root=nodes[1])
 
+
+def custom_testing():
+    test_numbers_to_delete = [90, 100, 94, 104, 95, 105]
+    for num in test_numbers_to_delete:
+        u = TestRedBlackTree()
+        u.setUp()
+        u.test_rbtdelete()
 
 if __name__ == '__main__':
     unittest.main()
-    # u = TestRedBlackTree()
-    # u.setUp()
-    # u.test_rbtdelete()
+    custom_testing()
 
