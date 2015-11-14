@@ -235,15 +235,10 @@ class RedBlackTree(BinarySearchTree):
         nodes = super().delete(el)
         if not nodes: 
             return None
-        print(self)  # TODO delete this
+        # print(self)  # TODO delete this
 
-        # If the replacement for the replacement has a value (my hack, a -1,
-        # or a node), then we know the original deletion happened for an 
-        # internal node. Hence, its replacement must be changed to the internal
-        # node's original color.
+        # unpack nodes involved in deletion
         deleted, replacement, rep_for_replacement = nodes
-        if rep_for_replacement:
-            replacement.color = deleted.color
 
         # We can just consider cases where a leaf or a node with one child is
         # deleted. In the case where an internal node gets deleted, it just gets
@@ -271,18 +266,29 @@ class RedBlackTree(BinarySearchTree):
         # that we only need to look at black leaves? Also implies these black leaves
         # have siblings.
         is_simple_case = False
+        print("v = {} color is {}".format(v.element, v.color))
         if v.color is RED or (u is not None and u.color is RED):
+            # replacement's old color is v's old color
             is_simple_case = True
 
+        # If the replacement for the replacement has a value (my hack, a -1,
+        # or a node), then we know the original deletion happened for an 
+        # internal node. Hence, its replacement must be changed to the internal
+        # node's original color.
+        if rep_for_replacement:
+            replacement.color = deleted.color
+
         # Handle resultant cases
-        if is_simple_case:            
+        if is_simple_case:
+            print("HANDLE SIMPLE CASE FOR DELETE")
             if u: 
                 u.color = BLACK
         else:
+            print("HANDLE HARD CASE FOR DELETED: ", deleted.element)
             # TODO implement the hard case
             # make u double black, even if it's NIL. 
-            # s is sibling, r is 
-            # case 1.iii: right_rotate(s.parent)
+            # case 1: (don't worry about double blacking)
+            sibling = u.parent.right if u is u.parent.left else u.parent.left
             pass
 
     def _balance(self, x):
@@ -383,8 +389,8 @@ class RedBlackTree(BinarySearchTree):
         """ x = parent; y = left child """
         y = x.left
         if x.parent:
-            if x.parent.right is x: x.parent.right = y
-            elif x.parent.left is x: x.parent.left = y
+            if x is x.parent.right: x.parent.right = y
+            elif x is x.parent.left: x.parent.left = y
             else: raise Exception('Not supposed to happen')
         else:
             self.root = y
