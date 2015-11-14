@@ -14,6 +14,13 @@ SAMPLE_SIZE = 100
 
 B, R = trees.BLACK, trees.RED
 
+RBT_ELEMENTS = [
+    None, (60,B),
+    (40,R), (90,R),
+    (20,B), (50,B), (80,B), (100,B),
+    (10,B), (30,R), (45,B), (55,B), (70,R), (85,B), (95,B), (105,B),
+    None,None,(25,B),(35,B),None,None,None,None,(65,B),(75,B),None,None,None,(96,R),(104,R),None]
+
 class TestBinarySearchTree(unittest.TestCase):
 
     def setUp(self):
@@ -169,37 +176,13 @@ class TestBinarySearchTree(unittest.TestCase):
 class TestRedBlackTree(unittest.TestCase):
 
     def setUp(self):
-        # END
-
-        #       11
-        #     /   \
-        #    2R    14
-        #  /  \   /  \  
-        # 1   7     15R
-        #/ \ / \    / \
-        #    5R 8R
-
-        # redblack elements. Because tree is binary, I need the first elemen 
+        # redblack elements. Because tree is binary, I need the first element
         # to be None so I can easily assign children/parents to nodes in
-        # the nested function above
-        # rb_els = [None, (11,B),
-        #           (2, R), (14, B),
-        #           (1, B), (7, B), None, (15, R),
-        #           None, None, (5, R), (8, R), None, None, None, None]
-        rb_els = [
-             None, (60,B),
-             (40,R), (90,R),
-             (20,B), (50,B), (80,B), (100,B),
-             (10,B), (30,R), (45,B), (55,B), (70,R), (85,B), (95,B), (105,B),
-             None,None,(25,B),(35,B),None,None,None,None,(65,B),(75,B),None,None,None,(96,R),(104,R),None]
+        # the nested function above, like a binary heap.
 
-        # Create the RBTs (wrong RBTs break the property of RBTs)
-        self.rbt = self._make_redblacktree(rb_els)
-        self.rbt.count = 9
-        self.initial_bh_rbt = 2
+        # Create the RBTs
+        self.rbt = self._make_redblacktree(RBT_ELEMENTS)
         self.measured_bh = None
-        # self.wrongrbt = self._make_redblacktree(self.wrongbst_elements)
-        # self.wrongrbt.count = 9
 
     def test_rbtproperty(self):
         """ Root is black, black depth is equal from every leaf,
@@ -247,19 +230,22 @@ class TestRedBlackTree(unittest.TestCase):
             self.rbt.insert(trees.RedBlackNode(r, trees.RED))
             self._dfs_test_rbt_property(self.rbt.root)
 
-    def test_rbtdelete(self):
-        print("\n********TEST REDBLACKTREE DELETE********")
+    def test_rbtdelete_hardcase(self):
+        print("\n********TEST RED BLACK TREE DELETE - HARD CASE**********")
         print(self.rbt)
 
         self.rbt.delete(90)
 
         self._dfs_test_rbt_property(self.rbt.root)
 
-    def custom_test_rbtdelete_simplecase(self, el):
-        print("\n********CUSTOM TEST REDBLACKTREE DELETE SIMPLE CASE********")
-        print(self.rbt)
-        self.rbt.delete(el)
-        self._dfs_test_rbt_property(self.rbt.root)
+    def test_delete_simplecase(self):
+        print("\n********TEST RED BLACK TREE DELETE - SIMPLE CASE********")
+        # print(self.rbt)
+        test_numbers_to_delete = [90, 100, 94, 104, 95, 105]
+        for num in test_numbers_to_delete:
+            rbt = self._make_redblacktree(RBT_ELEMENTS)
+            rbt.delete(num)
+            self._dfs_test_rbt_property(rbt.root)
 
     def _dfs_test_rbt_property(self, node):
         """ A recursive function that tests redblack tree property for a given 
@@ -334,11 +320,16 @@ class TestRedBlackTree(unittest.TestCase):
             if node.right: 
                 self._dfs_test_rbt_property(node.right)
 
-    def _make_redblacktree(self, els):
+    def _make_redblacktree(self, elems):
+        """ Manually create a custom red black tree """
         nodes = []
-        for i, x in enumerate(els):
-            if x is None: nodes.append(x)
-            else: nodes.append(trees.RedBlackNode(x[0], x[1]))
+        count = 0
+        for i, e in enumerate(elems):
+            if e is None: 
+                nodes.append(e)
+            else: 
+                nodes.append(trees.RedBlackNode(e[0], e[1]))
+                count += 1
 
         # connect them
         for i, node in enumerate(nodes):
@@ -346,17 +337,11 @@ class TestRedBlackTree(unittest.TestCase):
                 if i > 1: node.parent = nodes[int(i / 2)]
                 if i * 2 < len(nodes): node.left = nodes[i * 2]
                 if i * 2 + 1 < len(nodes): node.right = nodes[i * 2 + 1]
-        return trees.RedBlackTree(root=nodes[1])
 
-
-def custom_testing():
-    test_numbers_to_delete = [90, 100, 94, 104, 95, 105]
-    for num in test_numbers_to_delete:
-        u = TestRedBlackTree()
-        u.setUp()
-        u.test_rbtdelete()
+        rbt = trees.RedBlackTree(root=nodes[1])
+        rbt.count = count   # manual count update for this custom rbt
+        return rbt
 
 if __name__ == '__main__':
     unittest.main()
-    custom_testing()
 
