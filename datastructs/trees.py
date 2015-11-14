@@ -191,22 +191,6 @@ class RedBlackNode(Node):
       2. red property: RED nodes have BLACK children
       3. black property: Leaves are BLACK (None), and all have same black depth
          a. From 3, can we say that red nodes CAN'T have one NON-NIL children?
-
-    Left Rotation: 
-    x=parent, y=right child. y lets go left, pulls its right up and above x, and y
-    connects to x as its new left, connecting x's older parent to itself. At the 
-    same time, x disconnects y (its right), drops down to connect to y's old left
-
-      p              p
-     /              /
-    x              y
-     \      --->  / \
-      y          x   R
-     / \          \
-    L   R          L
-
-    left child -> right_rotate
-    right child -> left_rotate
     """
     def __init__(self, element, color, parent=None, left=None, right=None):
         super().__init__(element, parent, left, right)
@@ -296,12 +280,31 @@ class RedBlackTree(BinarySearchTree):
                 u.color = BLACK
         else:
             # TODO implement the hard case
-            # self._balance(replacement)
+            # make u double black, even if it's NIL. 
+            # s is sibling, r is 
+            # case 1.iii: right_rotate(s.parent)
             pass
 
     def _balance(self, x):
         """ The rotations here are called either with the current x OR with its 
-        grandparent """
+        grandparent 
+
+        Left Rotation (rotate(x)): 
+        x=parent, y=right child. y lets go left, pulls its right up and above x, and y
+        connects to x as its new left, connecting x's older parent to itself. At the 
+        same time, x disconnects y (its right), drops down to connect to y's old left
+
+          p              p
+         /              /
+        x              y
+         \      --->  / \
+          y          x   R
+         / \          \
+        L   R          L
+
+        left child -> right_rotate
+        right child -> left_rotate
+        """
         # Could find another way to retrieve element's node
         if x is not self.search(x.element):
             raise Exception("Not supposed to happen")
@@ -369,11 +372,11 @@ class RedBlackTree(BinarySearchTree):
 
         y.parent = x.parent
 
-        if y.left: y.left.parent = x
+        x.right = y.left
+        if y.left: 
+            y.left.parent = x
 
         x.parent = y
-        x.right = y.left
-
         y.left = x
 
     def _right_rotate(self, x):
@@ -388,9 +391,9 @@ class RedBlackTree(BinarySearchTree):
 
         y.parent = x.parent
 
-        if y.right: y.right.parent = x
+        x.left = y.right
+        if y.right: 
+            y.right.parent = x
 
         x.parent = y
-        x.left = y.right
-
         y.right = x
