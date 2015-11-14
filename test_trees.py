@@ -41,6 +41,10 @@ class TestBinarySearchTree(unittest.TestCase):
 
             return nodes
 
+        # ======================================================================
+        #                          BEGIN setUp()
+        # ======================================================================
+
 
         #       8
         #     /   \
@@ -194,7 +198,7 @@ class TestRedBlackTree(unittest.TestCase):
         self.assertEqual(self.rbt.root.color, trees.BLACK)
         
         if self.rbt.root: 
-            self._dfs_test_rbt_property(self.rbt.root)
+            self._test_rbt_property(self.rbt.root)
 
         # TODO do insertions and deletions and then check the bh
         elements_toinsert = [4, 3, 13, 6, 40, 20, 30]
@@ -202,7 +206,7 @@ class TestRedBlackTree(unittest.TestCase):
         for e in elements_toinsert:
             self.measured_bh = None
             self.rbt.insert(trees.RedBlackNode(e, trees.RED))
-            self._dfs_test_rbt_property(self.rbt.root)
+            self._test_rbt_property(self.rbt.root)
 
         # Insert numbers larger than rbt max until black height reaches threshold
         i = 50
@@ -210,7 +214,7 @@ class TestRedBlackTree(unittest.TestCase):
             self.measured_bh = None
             i += 1
             self.rbt.insert(trees.RedBlackNode(i, trees.RED))
-            self._dfs_test_rbt_property(self.rbt.root)
+            self._test_rbt_property(self.rbt.root)
 
         # Get actual height of rbt by traversing it, preferring right children
         height = 0
@@ -228,15 +232,12 @@ class TestRedBlackTree(unittest.TestCase):
             self.measured_bh = None
             r = random.randrange(0, 100)
             self.rbt.insert(trees.RedBlackNode(r, trees.RED))
-            self._dfs_test_rbt_property(self.rbt.root)
+            self._test_rbt_property(self.rbt.root)
 
     def test_rbtdelete_hardcase(self):
         print("\n********TEST RED BLACK TREE DELETE - HARD CASE**********")
         print(self.rbt)
-
-        self.rbt.delete(90)
-
-        self._dfs_test_rbt_property(self.rbt.root)
+        # todo
 
     def test_delete_simplecase(self):
         print("\n********TEST RED BLACK TREE DELETE - SIMPLE CASE********")
@@ -245,9 +246,9 @@ class TestRedBlackTree(unittest.TestCase):
         for num in test_numbers_to_delete:
             rbt = self._make_redblacktree(RBT_ELEMENTS)
             rbt.delete(num)
-            self._dfs_test_rbt_property(rbt.root)
+            self._test_rbt_property(rbt.root)
 
-    def _dfs_test_rbt_property(self, node):
+    def _test_rbt_property(self, node):
         """ A recursive function that tests redblack tree property for a given 
         node and recursively its children. Utilizes two nested recursive 
         functions for this task
@@ -292,6 +293,9 @@ class TestRedBlackTree(unittest.TestCase):
                 else:
                     return leftsum
 
+        # ======================================================================
+        #                          BEGIN _test_rbt_property ()
+        # ======================================================================
         # DFS nodes down to leaves, then call _black_height on leaf
         if not node.left and not node.right:
             # assert black height of leaf
@@ -312,13 +316,14 @@ class TestRedBlackTree(unittest.TestCase):
                 self.assertNotEqual(node.parent, None)  # roots have no parent
                 self.assertEqual(node.parent.color, trees.BLACK)
 
-            self.assertNotEqual(_black_height_to_leaves(node), -1)
+            self.assertNotEqual(_black_height_to_leaves(node), -1, 
+                                "Failed black height test")
 
             # recurse down to each child
             if node.left: 
-                self._dfs_test_rbt_property(node.left)
+                self._test_rbt_property(node.left)
             if node.right: 
-                self._dfs_test_rbt_property(node.right)
+                self._test_rbt_property(node.right)
 
     def _make_redblacktree(self, elems):
         """ Manually create a custom red black tree """
