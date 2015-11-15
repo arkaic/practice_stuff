@@ -244,7 +244,7 @@ class TestRedBlackTree(unittest.TestCase):
         print("\n********TEST RED BLACK TREE DELETE - HARD CASE A **********")
         # print(self.rbt)
         # TODO add cases to test i through iv
-        test_numbers_to_delete = [45]
+        test_numbers_to_delete = [40,45]
         for num in test_numbers_to_delete:
             rbt = self._make_redblacktree(RBT_ELEMENTS)
             rbt.delete(num)
