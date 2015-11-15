@@ -154,7 +154,9 @@ class BinarySearchTree:
 
         node.right = None
         node.left = None
-        node.parent = None
+        # TODO may clean this up outside, as bad as it sounds, because rbt.delete()
+        # needs this information
+        # node.parent = None
         self.count -= 1
         return (node, replacement, rep_for_replacement)
 
@@ -247,7 +249,9 @@ class RedBlackTree(BinarySearchTree):
         # node's right child's subtree, the replacement will always be either a
         # leaf or a node with just a right child. Thus, this third case reduces
         # back to the first two cases.
-        # Let v be the node that was deleted and u be its replacement.
+        # ------------------------------------------------------------
+        # Therefore, referencing the above, let v be the node that is deleted and u
+        # be its replacement.
         u = v = None
         if not rep_for_replacement:
             u = replacement
@@ -255,7 +259,7 @@ class RedBlackTree(BinarySearchTree):
         else:
             u = rep_for_replacement
             # my hack if the replacement was a leaf and does not get replaced
-            if u == -1:  
+            if rep_for_replacement == -1:  
                 u = None
             v = replacement
  
@@ -266,15 +270,10 @@ class RedBlackTree(BinarySearchTree):
         # that we only need to look at black leaves? Also implies these black leaves
         # have siblings.
         is_simple_case = False
-        print("v = {} color is {}".format(v.element, v.color))
         if v.color is RED or (u is not None and u.color is RED):
-            # replacement's old color is v's old color
             is_simple_case = True
 
-        # If the replacement for the replacement has a value (my hack, a -1,
-        # or a node), then we know the original deletion happened for an 
-        # internal node. Hence, its replacement must be changed to the internal
-        # node's original color.
+        # If the deleted node was an internal, its replacement inherits the color
         if rep_for_replacement:
             replacement.color = deleted.color
 
@@ -285,11 +284,57 @@ class RedBlackTree(BinarySearchTree):
                 u.color = BLACK
         else:
             print("HANDLE HARD CASE FOR DELETED: ", deleted.element)
-            # TODO implement the hard case
-            # make u double black, even if it's NIL. 
-            # case 1: (don't worry about double blacking)
-            sibling = u.parent.right if u is u.parent.left else u.parent.left
-            pass
+            if u:
+                raise Exception("shouldn't happen: u should be None right now " +
+                    "but it is {}".format(u.element))
+            if v.parent.left:
+                self._hard_case_for_delete(v.parent.left)
+            else:
+                self._hard_case_for_delete(v.parent.right)
+
+    def _hard_case_for_delete(self, sibling):
+        """ ...sibling to the replacement u
+        while u is double black or it is not root:
+        make u double black, even if it's NIL. 
+        case a: sibling is black with red child (don't worry about double 
+        blacking) base case
+        case b: sibling is black leaf (this is recursive and has a basecase)
+        case c: sibling is red with two children (this leads back to case 2's 
+            basecase)
+        """
+        if not sibling: raise Exception("Shouldn't happen: sibling is empty")
+
+        parent = sibling.parent
+        if sibling.color is BLACK:
+            if not sibling.left and not sibling.right:
+                # case b
+                sibling.color = RED
+                if sibling.parent.color is RED:
+                    sibling.parent.color = BLACK
+                else:
+                    if parent.parent:  # if not, parent is root and we are done
+                        auntie = (parent.parent.right if parent.parent.left is parent
+                                 else parent.parent.left)
+                        self._hard_case_for_delete(auntie)
+            else:
+                # case a
+                pass
+        elif sibling.color is RED:
+            # case c 
+            sibling.color = BLACK
+            parent.color = RED
+            if sibling is parent.right:
+                self._left_rotate(parent)
+            else:
+                self._right_rotate(parent)
+            if not parent.left:
+                self._hard_case_for_delete(parent.right)
+            elif not parent.right:
+                self._hard_case_for_delete(parent.left)
+            else:
+                raise Exception("Shouldn't happen: hard case c")
+
+
 
     def _balance(self, x):
         """ The rotations here are called either with the current x OR with its 
@@ -367,7 +412,7 @@ class RedBlackTree(BinarySearchTree):
         self.root.color = BLACK
 
     def _left_rotate(self, x):
-        """ x = parent; y = right child """
+        """ (counterclockwise) x = parent; y = right child """
         y = x.right
         if x.parent:
             if x.parent.left is x: x.parent.left = y
@@ -386,7 +431,7 @@ class RedBlackTree(BinarySearchTree):
         y.left = x
 
     def _right_rotate(self, x):
-        """ x = parent; y = left child """
+        """ (clockwise) x = parent; y = left child """
         y = x.left
         if x.parent:
             if x is x.parent.right: x.parent.right = y

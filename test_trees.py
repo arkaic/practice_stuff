@@ -241,7 +241,7 @@ class TestRedBlackTree(unittest.TestCase):
             rbt.delete(num)
             self._test_rbt_property(rbt.root)
 
-    def test_rbtdelete_hardcase1(self):
+    def test_rbtdelete_hardcasea(self):
         print("\n********TEST RED BLACK TREE DELETE - HARD CASE 1**********")
         # print(self.rbt)
         # todo
@@ -251,7 +251,7 @@ class TestRedBlackTree(unittest.TestCase):
             rbt.delete(num)
             self._test_rbt_property(rbt.root)
 
-    def test_rbtdelete_hardcase2(self):
+    def test_rbtdelete_hardcaseb(self):
         print("\n********TEST RED BLACK TREE DELETE - HARD CASE 2 **********")
         # print(self.rbt)
         # todo
@@ -261,11 +261,11 @@ class TestRedBlackTree(unittest.TestCase):
         #     rbt.delete(num)
         #     self._test_rbt_property(rbt.root)
 
-    def test_rbtdelete_hardcase3(self):
+    def test_rbtdelete_hardcasec(self):
         print("\n********TEST RED BLACK TREE DELETE - HARD CASE 3**********")
         # print(self.rbt)
         # todo
-        test_numbers_to_delete = []  # 85
+        test_numbers_to_delete = [85, 10]
         for num in test_numbers_to_delete:
             rbt = self._make_redblacktree(RBT_ELEMENTS)
             rbt.delete(num)
