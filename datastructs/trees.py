@@ -217,16 +217,6 @@ class RedBlackTree(BinarySearchTree):
     # @Override 
     def delete(self, elem):
         """ 
-        Case 1: deleted node is leaf
-        Case 2: deleted node has only left
-        Case 3: deleted node has only right
-        Balance bh starting at the substituted node if deleted node is black.
-
-        Case 4: deleted node has both children
-        if red deleted and subbed with red, nothing needed
-        if red deleted and subbed with black, balance at subtree (red property)
-        if black deleted and subbed with black, balance starting at the subtree
-        if black deleted and subbed with red, balance at substituted node
         """
 
         try:
@@ -295,7 +285,7 @@ class RedBlackTree(BinarySearchTree):
         parent = sibling.parent
         if sibling.color is BLACK:
             if not sibling.left and not sibling.right:
-                # case b
+                # case b - sibling is a leaf
                 sibling.color = RED
                 if sibling.parent.color is RED:
                     print(sibling.element)
@@ -306,16 +296,38 @@ class RedBlackTree(BinarySearchTree):
                                  else parent.parent.left)
                         self._hard_case_for_delete(auntie)
             else:
-                # case a
+                # case a sibling is not a leaf and its children should be red
+                if sibling.left and sibling.left.color is BLACK:
+                    raise Exception("Shouldn't happen")
+                if sibling.right and sibling.right.color is BLACK:
+                    raise Exception("Shouldn't happen")
+
                 if sibling is parent.left:
-                    pass
+                    if sibling.left:
+                        # i
+                        if (sibling.left.color is BLACK or 
+                            (sibling.right is not None and sibling.right.color is BLACK)):
+                           raise Exception("Shouldn't happen: sibling has a black child in case a-i") 
+                        # TODO implement
+                    else:
+                        # ii
+                        self._left_rotate(sibling)
+                        # TODO implement
                 else:
                     if sibling.right:
                         # iii; there may also be a left child
+                        # TODO implement
                         pass
                     else:
-                        # iv; 
-                        _right_rotate(sibling)
+                        # iv 
+                        if parent.color is BLACK:
+                            sibling.left.color = BLACK
+                        else:
+                            print("second")
+                            sibling.color = RED
+                            sibling.left.color = BLACK
+                        self._right_rotate(sibling)
+                        self._left_rotate(parent)
                     pass
                 pass
         elif sibling.color is RED:
