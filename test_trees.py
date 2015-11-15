@@ -126,8 +126,8 @@ class TestBinarySearchTree(unittest.TestCase):
                     _dfs_subtree(subtreenode.right, el, subtree)
 
             if node:
-                if node.left:
-                    print("stn={}, topel={}".format(node.left.element, node.element))
+                # if node.left:
+                    # print("stn={}, topel={}".format(node.left.element, node.element))
                 _dfs_subtree(node.left, node.element, LEFT_SUBTREE)
                 _dfs_subtree(node.right, node.element, RIGHT_SUBTREE)
                 _dfs_all(node.left)
@@ -152,10 +152,10 @@ class TestBinarySearchTree(unittest.TestCase):
         # Delete preexisting then reinsert
         els = [8, 7, 14, 1, 4]
         for e in els:
-            print(self.bst)
-            print("deleting {}".format(e))
+            # print(self.bst)
+            # print("deleting {}".format(e))
             self.bst.delete(e)
-            print(self.bst)
+            # print(self.bst)
             _dfs_all(self.bst.root)
             self.bst.insert(trees.Node(e))
             _dfs_all(self.bst.root)
@@ -166,11 +166,11 @@ class TestBinarySearchTree(unittest.TestCase):
     def test_bstdelete(self):
         print("\n********TEST B.S. TREE DELETE*******")
         elements = [3, 7, 10]
-        print(self.bst)
+        # print(self.bst)
         for e in elements:
             node, replacement, repl_for_replacement = self.bst.delete(e)
             # print(node.element, "for", replacement.element)
-            print(self.bst)
+            # print(self.bst)
             if replacement:
                 self.assertTrue(self.bst.search(replacement.element) is not None, e)
 
@@ -222,7 +222,7 @@ class TestRedBlackTree(unittest.TestCase):
             if ptr.right: ptr = ptr.right
             elif ptr.left: ptr = ptr.left
             else: ptr = None
-        print('Height after long insertions: {}'.format(height))
+        # print('Height after long insertions: {}'.format(height))
         # assert that black height is >= to half the actual height rounded up
         self.assertGreaterEqual(self.measured_bh, math.ceil(height/2))
 
@@ -245,7 +245,7 @@ class TestRedBlackTree(unittest.TestCase):
         print("\n********TEST RED BLACK TREE DELETE - HARD CASE 1**********")
         # print(self.rbt)
         # todo
-        test_numbers_to_delete = []
+        test_numbers_to_delete = [] #[45]
         for num in test_numbers_to_delete:
             rbt = self._make_redblacktree(RBT_ELEMENTS)
             rbt.delete(num)
