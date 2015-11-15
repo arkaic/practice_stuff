@@ -70,95 +70,91 @@ class BinarySearchTree:
         if not node:
             return None
 
-        replacement = None
+        deleted = None  # if node is internal, deleted is its replacement
+        replacement = None  # if node is internal, replacement is replacement's repl
+        parent_of_replacement = None  # keep track of the original parent of deleted
         rep_for_replacement = None
         if not node.right:
-            if not node.left:
-                # Case 1: node is leaf          #(1,0,0)
-                if node.element > node.parent.element:
-                    node.parent.right = None
+            deleted = node
+            parent_of_replacement = node.parent
+
+            if not deleted.left:
+                # Case 1: delete-node is leaf          #(1,0,0)
+                if deleted.element > deleted.parent.element:
+                    deleted.parent.right = None
                 else:
-                    node.parent.left = None
+                    deleted.parent.left = None
             else:
-                # Case 2: node has left only    #(1,1,0)
-                node.left.parent = node.parent
-                if node is node.parent.right:
-                    node.parent.right = node.left
-                elif node is node.parent.left:
-                    node.parent.left = node.left
+                # Case 2: delete-node has left only    #(1,1,0)
+                replacement = deleted.left
+                replacement.parent = deleted.parent
+                if deleted is deleted.parent.right:
+                    deleted.parent.right = replacement
+                elif deleted is deleted.parent.left:
+                    deleted.parent.left = replacement
                 else:
                     raise Exception("shouldn't happen")
-                replacement = node.left       
         elif not node.left:
             # Case 3: node has right only       #(1,1,0)
-            node.right.parent = node.parent
-            if node is node.parent.right:
-                node.parent.right = node.right
-            elif node is node.parent.left:
-                node.parent.left = node.right
+            deleted = node
+            parent_of_replacement = node.parent
+            replacement = deleted.right
+
+            replacement.parent = deleted.parent
+            if deleted is deleted.parent.right:
+                deleted.parent.right = replacement
+            elif deleted is deleted.parent.left:
+                deleted.parent.left = replacement
             else:
                 raise Exception("shouldn't happen")
-            replacement = node.right
         else:
-            # Case 4: node is internal
-            replacement = node.right
-            if not replacement.left:
-                # use deleted node's immediate right child as replacement because it
-                # is the smallest node in right subtree   #(1,1,1) or 1,1,-1
-                # (v is rep, u is )
-                replacement.left = node.left
-                replacement.parent = node.parent
-                replacement.left.parent = replacement
-                if node.parent:
-                    if node.parent.left == node:
-                        node.parent.left = replacement
-                    elif node.parent.right == node:
-                        node.parent.right = replacement
-                    else: 
-                        raise Exception("shouldn't happen")
-                rep_for_replacement = replacement.right
-                if not rep_for_replacement:
-                    rep_for_replacement = -1  # hack
+            # Case 4: Node is internal. Delete-node isn't actually deleted here, 
+            # but moves to replace the internal node.
+            deleted = node.right
+            if not deleted.left:
+                # replacement's parent won't change because we're using internal
+                # node's right as its successor.
+                replacement = deleted.right
+                parent_of_replacement = deleted
+
+                deleted.left = node.left
+                deleted.parent = node.parent
+                deleted.left.parent = deleted
             else:
                 # Get smallest node in right subtree for replacement 
-                while replacement.left:
-                    replacement = replacement.left
+                while deleted.left:
+                    deleted = deleted.left
 
-                # update references of old neighbors of replacement
-                replacement.parent.left = replacement.right
-                if replacement.right:    #(1,1,1)
-                    rep_for_replacement = replacement.right
-                    rep_for_replacement.parent = replacement.parent
-                else:                    #(1,1,-1)
-                    rep_for_replacement = -1   # hack 
+                replacement = deleted.right
+                parent_of_replacement = deleted.parent
 
-                # update replacement's refs
-                replacement.left = node.left
-                replacement.right = node.right
-                replacement.parent = node.parent
+                # update references of delete-node's old parent and replacement
+                deleted.parent.left = replacement
+                if replacement:
+                    replacement.parent = deleted.parent
 
-                # update replacement's new left's and right's parent refs
-                replacement.left.parent = replacement
-                replacement.right.parent = replacement
+                # update delete-node's refs
+                deleted.left = node.left
+                deleted.right = node.right
+                deleted.parent = node.parent
 
-                # update deleted node's parent's child ref to replacement
-                if node == node.parent.left:
-                    node.parent.left = replacement
-                elif node == node.parent.right:
-                    node.parent.right = replacement
+                # update delete-node's new children's parent refs
+                deleted.left.parent = deleted
+                deleted.right.parent = deleted
+
+            # update internal node's parent's references to delete-node
+            if deleted.parent:
+                if node == deleted.parent.left:
+                    deleted.parent.left = deleted
+                elif node == deleted.parent.right:
+                    deleted.parent.right = deleted
                 else: 
                     raise Exception("shouldn't happen")
+            else:
+                self.root = deleted
 
-            if replacement.parent is None:
-                self.root = replacement
-
-        node.right = None
-        node.left = None
-        # TODO may clean this up outside, as bad as it sounds, because rbt.delete()
-        # needs this information
-        # node.parent = None
         self.count -= 1
-        return (node, replacement, rep_for_replacement)
+        return (deleted, replacement, parent_of_replacement)
 
     def __str__(self):
         c = 0 
@@ -219,7 +215,7 @@ class RedBlackTree(BinarySearchTree):
             self._balance(node)
 
     # @Override 
-    def delete(self, el):
+    def delete(self, elem):
         """ 
         Case 1: deleted node is leaf
         Case 2: deleted node has only left
@@ -233,64 +229,56 @@ class RedBlackTree(BinarySearchTree):
         if black deleted and subbed with red, balance at substituted node
         """
 
+        try:
+            # no change in time complexity at least
+            original_delete_node_color = self.search(elem).color  
+        except AttributeError:
+            return None
+
         # Delete just like in a binary tree
-        nodes = super().delete(el)
+        nodes = super().delete(elem)
         if not nodes: 
             return None
         # print(self)  # TODO delete this
 
         # unpack nodes involved in deletion
-        deleted, replacement, rep_for_replacement = nodes
+        deleted, replacement, replacements_parent = nodes
+
+        # if delete-node is not the original node that was deleted, the original
+        # node was an internal node. Change this delete-node to that internal's
+        # original color. Save the original delete-node color too
+        deleted_oldcolor = deleted.color
+        if deleted.element != elem:
+            deleted.color = original_delete_node_color
 
         # We can just consider cases where a leaf or a node with one child is
         # deleted. In the case where an internal node gets deleted, it just gets
-        # replaced with its replacement, and then we have to consider deleting THAT
-        # replacement. Since that replacement is the smallest node in the internal
-        # node's right child's subtree, the replacement will always be either a
-        # leaf or a node with just a right child. Thus, this third case reduces
-        # back to the first two cases.
+        # replaced with its replacement, and then we have to consider deleting
+        # THAT replacement. Since that replacement is the smallest node in the 
+        # internal node's right child's subtree, the replacement will always be 
+        # either a leaf or a node with just a right child. Thus, this third case 
+        # reduces back to the first two cases.
         # ------------------------------------------------------------
-        # Therefore, referencing the above, let v be the node that is deleted and u
-        # be its replacement.
-        u = v = None
-        if not rep_for_replacement:
-            u = replacement
-            v = deleted
-        else:
-            u = rep_for_replacement
-            # my hack if the replacement was a leaf and does not get replaced
-            if rep_for_replacement == -1:  
-                u = None
-            v = replacement
  
-        # Two resultant cases on how to handle rebalancing the red black tree
-        # spring from the above:
-        # Simple case: u or v is red  (NIL leaves are considered black)
-        # Non-simple case: u and v is black, but due to black property, implies
-        # that we only need to look at black leaves? Also implies these black leaves
-        # have siblings.
         is_simple_case = False
-        if v.color is RED or (u is not None and u.color is RED):
+        if (deleted_oldcolor is RED or 
+                (replacement is not None and replacement.color is RED)):
             is_simple_case = True
-
-        # If the deleted node was an internal, its replacement inherits the color
-        if rep_for_replacement:
-            replacement.color = deleted.color
 
         # Handle resultant cases
         if is_simple_case:
             print("HANDLE SIMPLE CASE FOR DELETE")
-            if u: 
-                u.color = BLACK
+            if replacement: 
+                replacement.color = BLACK
         else:
-            print("HANDLE HARD CASE FOR DELETED: ", deleted.element)
-            if u:
-                raise Exception("shouldn't happen: u should be None right now " +
-                    "but it is {}".format(u.element))
-            if v.parent.left:
-                self._hard_case_for_delete(v.parent.left)
+            print("HANDLE HARD CASE FOR DELETED:", elem)
+            if replacement:
+                raise Exception("shouldn't happen: replacement should be None" +
+                    "right now but it is {}".format(replacement.element))
+            if replacements_parent.left:    # TODO v coulda been root
+                self._hard_case_for_delete(replacements_parent.left)
             else:
-                self._hard_case_for_delete(v.parent.right)
+                self._hard_case_for_delete(replacements_parent.right)
 
     def _hard_case_for_delete(self, sibling):
         """ ...sibling to the replacement u
@@ -310,6 +298,7 @@ class RedBlackTree(BinarySearchTree):
                 # case b
                 sibling.color = RED
                 if sibling.parent.color is RED:
+                    print(sibling.element)
                     sibling.parent.color = BLACK
                 else:
                     if parent.parent:  # if not, parent is root and we are done
@@ -318,6 +307,16 @@ class RedBlackTree(BinarySearchTree):
                         self._hard_case_for_delete(auntie)
             else:
                 # case a
+                if sibling is parent.left:
+                    pass
+                else:
+                    if sibling.right:
+                        # iii; there may also be a left child
+                        pass
+                    else:
+                        # iv; 
+                        _right_rotate(sibling)
+                    pass
                 pass
         elif sibling.color is RED:
             # case c 

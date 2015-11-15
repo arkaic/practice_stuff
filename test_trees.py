@@ -198,9 +198,8 @@ class TestRedBlackTree(unittest.TestCase):
         if self.rbt.root: 
             self._test_rbt_property(self.rbt.root)
 
-        # TODO do insertions and deletions and then check the bh
+        # do insertions and then check the bh
         elements_toinsert = [4, 3, 13, 6, 40, 20, 30]
-        elements_toinsert = [4]
         for e in elements_toinsert:
             self.measured_bh = None
             self.rbt.insert(trees.RedBlackNode(e, trees.RED))
@@ -242,7 +241,7 @@ class TestRedBlackTree(unittest.TestCase):
             self._test_rbt_property(rbt.root)
 
     def test_rbtdelete_hardcasea(self):
-        print("\n********TEST RED BLACK TREE DELETE - HARD CASE 1**********")
+        print("\n********TEST RED BLACK TREE DELETE - HARD CASE A **********")
         # print(self.rbt)
         # todo
         test_numbers_to_delete = [] #[45]
@@ -252,16 +251,16 @@ class TestRedBlackTree(unittest.TestCase):
             self._test_rbt_property(rbt.root)
 
     def test_rbtdelete_hardcaseb(self):
-        print("\n********TEST RED BLACK TREE DELETE - HARD CASE 2 **********")
+        print("\n********TEST RED BLACK TREE DELETE - HARD CASE B **********")
         # print(self.rbt)
-        test_numbers_to_delete = [25,35,65,75]  #add 55 after impl case a
+        test_numbers_to_delete = [25,35,65,75,60]  #add 55 after impl case a
         for num in test_numbers_to_delete:
             rbt = self._make_redblacktree(RBT_ELEMENTS)
             rbt.delete(num)
             self._test_rbt_property(rbt.root)
 
     def test_rbtdelete_hardcasec(self):
-        print("\n********TEST RED BLACK TREE DELETE - HARD CASE 3**********")
+        print("\n********TEST RED BLACK TREE DELETE - HARD CASE C **********")
         # print(self.rbt)
         # todo
         test_numbers_to_delete = [85, 10]
