@@ -1,14 +1,8 @@
 import sys
 import math
 
-def fold_left(strip):
-    """
-    size: 4
-    0  1  2  3
-          1  0
-
-    0  1  2  3  4  5  6  7
-    """
+def fold_right(strip):
+    """ The left side of the strip is folded over the right """
     if len(strip) % 2:
         print("can't fold in half")
         return
@@ -24,15 +18,16 @@ def fold_left(strip):
     # first half of strip should be empty so return second half of strip
     return new_strip
 
-def fold_right(strip):
+def fold_left(strip):
+    """ The right side of the strip is folded over the left """
     if len(strip) % 2:
         print("can't fold in half")
         return
+
     middle = int(len(strip) / 2)
     new_strip = strip[middle:]
     for i in range(middle):
         index = -(i + 1) % middle
-        # print("index", index)
         while new_strip[index]:
             strip[i].append(new_strip[index].pop())
         new_strip[index] = strip[i]
@@ -48,10 +43,27 @@ def run(n):
     for i in range(2**n):
         strip.append([i])
 
-    # TODO loop for user input to fold either left or right and print after each
+    while len(strip) > 1:
+        print(strip)
+        fold_direction = input("Fold direction? [l/r/q] -> ")
+        if fold_direction.lower() == 'l':
+            strip = fold_left(strip)
+        elif fold_direction.lower() == 'r':
+            strip = fold_right(strip)
+        elif fold_direction.lower() == 'q':
+            print("quitting")
+            return
+        else:
+            print("Invalid input")
+
+    print("\nFINAL\n", strip)
 
 if __name__ == '__main__':
     if len(sys.argv) != 2:
+        print("FOLDING SQUARES")
+        print("A program that folds a strip of paper with numbered 2^n squares in",
+              "halves depending on which direction you choose to fold in each time",
+              "and outputs the order of the squares.")
         print("COMMAND: python3 {} <number>".format(sys.argv[0]))
     else:
         run(int(sys.argv[1]))
