@@ -520,6 +520,8 @@ class AlphaTrieTree():
     def insert(self, string):
         current_node = self.root
         for letter in string:
+            if letter == ' ':
+                continue
             # add letter into trie tree, if not already existing, and travel
             if not current_node.has_child(letter):
                 print("adding", letter, "to tree")
@@ -533,6 +535,8 @@ class AlphaTrieTree():
     def search(self, string):
         current_node = self.root
         for letter in string:
+            if letter == ' ':
+                continue
             if not current_node.has_child(letter):
                 return False
             current_node = current_node.get_child(letter)
