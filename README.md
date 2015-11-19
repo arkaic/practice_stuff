@@ -1,7 +1,4 @@
-A collection of practice problems and datastructure/algorithms implementations
+# A collection of practice problems and datastructure/algorithms implementations
 
-TODO: 
-- Red Black Tree Deletion Implementation status: 
-  a. three more sections of the hardcase to implemeent and test and I'll be DUN
-
-- https://leetcode.com/problems/word-search-ii/
+### TODO
+**Red Black Tree Deletion Implementation**: three more sections of the hardcase to implement and test and I'd be done.
