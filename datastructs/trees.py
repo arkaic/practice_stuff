@@ -480,7 +480,7 @@ class AlphaTrieNode:
             self.letter = self.letter.lower()
         self.parent = parent
         self.__children = None  # lazily initiate the dict for saving space
-        self._word = None  # also lazily store what the word is up till this point
+        self._word = None  # lazily store what the word is up till this point
 
     def has_child(self, letter):
         return letter.lower() in self._get_children()
@@ -493,7 +493,12 @@ class AlphaTrieNode:
             return None
         return self._get_children()[letter.lower()]
 
+    def remove_child(self, letter):
+        if self.has_child(letter):
+            del self._get_children()[letter.lower()]
+
     def get_word(self):
+        # gets and sets the word on this node
         if not self._word:
             current = self
             strlist = []
@@ -502,6 +507,13 @@ class AlphaTrieNode:
                 current = current.parent
             self._word = "".join(strlist)
         return self._word
+
+    def remove_word(self):
+        # if this node doesn't have _word set, it's set for deletion the next
+        # time a word that includes this node is removed from the tree iff there
+        # are no intermediate nodes between this and the word's last node that
+        # have their _word set to the string.
+        _word = None
 
     def _get_children(self):
         if not self.__children:
@@ -527,10 +539,9 @@ class AlphaTrieTree():
                 print("adding", letter, "to tree")
                 current_node.add_child(letter)
             current_node = current_node.get_child(letter)
+        current_node._word = string.lower()
 
-        # TODO FOR DEBUG PURPOSES, REMOVE AFTERWARDS FOR SPACE EFFICIENCY
-        # current_node._word = string.lower()
-        self.last_inserted_node = current_node
+        self.last_inserted_node = current_node  # DEBUG PURPOSES
 
     def search(self, string):
         current_node = self.root
@@ -543,4 +554,19 @@ class AlphaTrieTree():
         return True
 
     def remove(self, string):
-        pass
+        # TODO remove child
+        current = self.root
+        for letter in string:
+            if letter == ' ':
+                continue
+            if not current.has_child(letter):
+                print("string to be removed not found")
+                return
+            current = current.get_child(letter)
+
+        current.remove_word()
+        while current._word is None and current is not self.root:
+            # remove current from any refs
+            # reassign current as parent
+            current.parent.remove_child(current.letter)
+            current = current.parent
