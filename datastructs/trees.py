@@ -3,7 +3,7 @@ import math
 BLACK = 0
 RED = 1
 
-class Node:
+class BinaryNode:
     def __init__(self, element, parent=None, left=None, right=None):
         self.element = element
         self.parent = parent
@@ -182,7 +182,7 @@ class BinarySearchTree:
         return s
 
 
-class RedBlackNode(Node):
+class RedBlackNode(BinaryNode):
     """ Red/Black Notes
     Properties: 
       1. root property: Black root
@@ -328,8 +328,6 @@ class RedBlackTree(BinarySearchTree):
                             sibling.left.color = BLACK
                         self._right_rotate(sibling)
                         self._left_rotate(parent)
-                    pass
-                pass
         elif sibling.color is RED:
             # case c 
             sibling.color = BLACK

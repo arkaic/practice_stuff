@@ -30,7 +30,7 @@ class TestBinarySearchTree(unittest.TestCase):
                 if x is None:
                     nodes.append(x)
                 else:
-                    nodes.append(trees.Node(x))
+                    nodes.append(trees.BinaryNode(x))
 
             # connect them
             for i, node in enumerate(nodes):
@@ -89,21 +89,21 @@ class TestBinarySearchTree(unittest.TestCase):
 
     def test_insert(self):
         print("\n********TEST B.S. TREE INSERT PROPERTIES*******")
-        self.assertFalse(self.singlebst.insert(trees.Node(8)))
-        self.assertTrue(self.singlebst.insert(trees.Node(1)))
+        self.assertFalse(self.singlebst.insert(trees.BinaryNode(8)))
+        self.assertTrue(self.singlebst.insert(trees.BinaryNode(1)))
         self.assertEqual(self.singlebst.count, 2)
 
         self.assertEqual(self.bst.count, 9)
-        self.assertTrue(self.bst.insert(trees.Node(0)))
-        self.assertTrue(self.bst.insert(trees.Node(-1)))
-        self.assertTrue(self.bst.insert(trees.Node(17)))
-        self.assertTrue(self.bst.insert(trees.Node(55)))
-        self.assertFalse(self.bst.insert(trees.Node(0)))
-        self.assertFalse(self.bst.insert(trees.Node(-1)))
+        self.assertTrue(self.bst.insert(trees.BinaryNode(0)))
+        self.assertTrue(self.bst.insert(trees.BinaryNode(-1)))
+        self.assertTrue(self.bst.insert(trees.BinaryNode(17)))
+        self.assertTrue(self.bst.insert(trees.BinaryNode(55)))
+        self.assertFalse(self.bst.insert(trees.BinaryNode(0)))
+        self.assertFalse(self.bst.insert(trees.BinaryNode(-1)))
 
         for e in self.bst_elements:
             if e is not None:
-                self.assertFalse(self.bst.insert(trees.Node(e)))
+                self.assertFalse(self.bst.insert(trees.BinaryNode(e)))
 
         self.assertEqual(self.bst.count, 13)
 
@@ -140,7 +140,7 @@ class TestBinarySearchTree(unittest.TestCase):
         # Assert that after each insert and delete, property still holds
         els = [9, 2, 5]
         for e in els:
-            self.bst.insert(trees.Node(e))
+            self.bst.insert(trees.BinaryNode(e))
             _dfs_all(self.bst.root)
             self.bst.delete(e)
             _dfs_all(self.bst.root)
@@ -157,7 +157,7 @@ class TestBinarySearchTree(unittest.TestCase):
             self.bst.delete(e)
             # print(self.bst)
             _dfs_all(self.bst.root)
-            self.bst.insert(trees.Node(e))
+            self.bst.insert(trees.BinaryNode(e))
             _dfs_all(self.bst.root)
 
         # self.assertEqual(self.bst.count, 0)  # hack to see if dfs was looking through everything
