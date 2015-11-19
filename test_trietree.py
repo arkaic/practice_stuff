@@ -66,11 +66,7 @@ class TestTrieTree(unittest.TestCase):
         self.assertFalse(self.trie.search('backrub'))
         self.assertTrue(self.trie.search('backrubber'))
 
-
-
     def test_properties(self):
-        # TODO assert that all leaves should have _word ie that the words they
-        # represent are "in" the tree
         pass
 
 if __name__ == '__main__':
