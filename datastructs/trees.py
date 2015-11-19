@@ -480,7 +480,13 @@ class AlphaTrieNode:
             self.letter = self.letter.lower()
         self.parent = parent
         self.__children = None  # lazily initiate the dict for saving space
-        self._word = None  # lazily store what the word is up till this point
+        self.is_word_contained = False
+
+    def has_children(self):
+        if len(self._get_children()) > 0:
+            return True
+        else:
+            return False
 
     def has_child(self, letter):
         return letter.lower() in self._get_children()
@@ -497,23 +503,14 @@ class AlphaTrieNode:
         if self.has_child(letter):
             del self._get_children()[letter.lower()]
 
-    def get_word(self):
-        # gets and sets the word on this node
-        if not self._word:
-            current = self
-            strlist = []
-            while current is not None and current.letter is not None:
-                strlist.insert(0, current.letter)
-                current = current.parent
-            self._word = "".join(strlist)
-        return self._word
-
-    def remove_word(self):
-        # if this node doesn't have _word set, it's set for deletion the next
-        # time a word that includes this node is removed from the tree iff there
-        # are no intermediate nodes between this and the word's last node that
-        # have their _word set to the string.
-        _word = None
+    def _lookup_word(self):
+        # Traverse up to the root to retrieve the word this node represents
+        current = self
+        strlist = []
+        while current is not None and current.letter is not None:
+            strlist.insert(0, current.letter)
+            current = current.parent
+        return "".join(strlist)
 
     def _get_children(self):
         if not self.__children:
@@ -536,10 +533,11 @@ class AlphaTrieTree():
                 continue
             # add letter into trie tree, if not already existing, and travel
             if not current_node.has_child(letter):
-                print("adding", letter, "to tree")
                 current_node.add_child(letter)
             current_node = current_node.get_child(letter)
-        current_node._word = string.lower()
+
+        # marks the word as "in" the tree
+        current_node.is_word_contained = True
 
         self.last_inserted_node = current_node  # DEBUG PURPOSES
 
@@ -551,10 +549,10 @@ class AlphaTrieTree():
             if not current_node.has_child(letter):
                 return False
             current_node = current_node.get_child(letter)
-        return True
+        return current_node.is_word_contained
 
     def remove(self, string):
-        # TODO remove child
+        # search
         current = self.root
         for letter in string:
             if letter == ' ':
@@ -564,8 +562,13 @@ class AlphaTrieTree():
                 return
             current = current.get_child(letter)
 
-        current.remove_word()
-        while current._word is None and current is not self.root:
+        current.is_word_contained = False
+        # don't actually delete any nodes if another word is in the trie tree
+        # that includes this word
+        if current.has_children():
+            return
+
+        while not current.is_word_contained and current is not self.root:
             # remove current from any refs
             # reassign current as parent
             current.parent.remove_child(current.letter)
