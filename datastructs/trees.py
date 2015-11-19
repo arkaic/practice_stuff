@@ -1,6 +1,12 @@
 BLACK = 0
 RED = 1
 
+
+################################################################################
+#                            BINARY TREE                                       #
+################################################################################
+
+
 class BinaryNode:
     def __init__(self, element, parent=None, left=None, right=None):
         self.element = element
@@ -178,6 +184,11 @@ class BinarySearchTree:
             s += el_str + '\n'
         s += '\nNode Count sans NILs = {}\n--------------------------'.format(c)
         return s
+
+
+################################################################################
+#                           RED BLACK TREE                                     #
+################################################################################
 
 
 class RedBlackNode(BinaryNode):
@@ -461,3 +472,71 @@ class RedBlackTree(BinarySearchTree):
 #                                 TRIE TREE                                    #
 ################################################################################
 
+
+class AlphaTrieNode:
+    def __init__(self, letter=None, parent=None):
+        self.letter = letter
+        if self.letter is not None:
+            self.letter = self.letter.lower()
+        self.parent = parent
+        self.__children = None  # lazily initiate the dict for saving space
+        self._word = None  # also lazily store what the word is up till this point
+
+    def has_child(self, letter):
+        return letter.lower() in self._get_children()
+
+    def add_child(self, letter):
+        self._get_children()[letter.lower()] = AlphaTrieNode(letter, self)
+
+    def get_child(self, letter):
+        if not self.has_child(letter):
+            return None
+        return self._get_children()[letter.lower()]
+
+    def get_word(self):
+        if not self._word:
+            current = self
+            strlist = []
+            while current is not None and current.letter is not None:
+                strlist.insert(0, current.letter)
+                current = current.parent
+            self._word = "".join(strlist)
+        return self._word
+
+    def _get_children(self):
+        if not self.__children:
+            self.__children = dict()
+        return self.__children
+
+
+class AlphaTrieTree():
+    """ A tree for searching words consisting of any of the 26 letters in the
+    alphabet. Case insensitive, space ignored. 
+    """
+
+    def __init__(self):
+        self.root = AlphaTrieNode(None)  # root node has None for its letter
+
+    def insert(self, string):
+        current_node = self.root
+        for letter in string:
+            # add letter into trie tree, if not already existing, and travel
+            if not current_node.has_child(letter):
+                print("adding", letter, "to tree")
+                current_node.add_child(letter)
+            current_node = current_node.get_child(letter)
+
+        # TODO FOR DEBUG PURPOSES, REMOVE AFTERWARDS FOR SPACE EFFICIENCY
+        # current_node._word = string.lower()
+        self.last_inserted_node = current_node
+
+    def search(self, string):
+        current_node = self.root
+        for letter in string:
+            if not current_node.has_child(letter):
+                return False
+            current_node = current_node.get_child(letter)
+        return True
+
+    def remove(self, string):
+        pass
