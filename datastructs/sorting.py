@@ -1,3 +1,5 @@
+""" All sorts in ascending order """
+
 def insertionsort(l):
     ptr = 1
     while ptr < len(l):
@@ -75,3 +77,58 @@ def mergesort(l):
     m = mergesort(l[:middle])
     n = mergesort(l[middle:])
     return merge(m, n)
+
+def heapsort(l):
+    """ In place sorting exploiting the heap property of indices in a binary 
+    tree.
+    """
+    def swap(i, j):
+        tmp = l[i]
+        l[i] = l[j]
+        l[j] = tmp
+
+    def heap_up(i):
+        if i != 0:
+            parent = int((i - 1) / 2)
+            if l[i] > l[parent]:
+                swap(i, parent)
+                heap_up(parent)
+
+    def heap_down(i, heap_divider):
+        left, right = i * 2 + 1, i * 2 + 2
+        if i < heap_divider and left < heap_divider:
+            choice = None
+            if l[i] < l[left]:
+                if right < heap_divider and l[i] < l[right]:
+                    choice = left if l[left] > l[right] else right
+                else:
+                    choice = left
+            elif right < heap_divider and l[i] < l[right]:
+                choice = right
+            if choice is not None:
+                swap(i, choice)
+                heap_down(choice, heap_divider)
+
+    # ---------------------- END NESTED FUNCTIONS ------------------------------
+
+    # First, order l into a heap. The heap will build up as the left side of the
+    # list using a pointer, the heap_divider, to mark the division line. The ptr
+    # will start from the left side and end on the right side, denoting that the
+    # heap is built. Throughout the heap building, the pointer points to the item
+    # that needs to be heaped up.
+    heap_divider = 0  # index of position immediately right of heap
+    while heap_divider < len(l):
+        heap_up(heap_divider)
+        heap_divider += 1
+
+    # Second, build the output list by moving the heap_divider back to the left.
+    # Specifically, swap the first item with the current heap_divider, heap down
+    # the new first item, then move the pointer left by one.
+    heap_divider -= 1
+    while heap_divider > 0:
+        swap(0, heap_divider)
+        heap_down(0, heap_divider)
+        heap_divider -= 1
+    return l
+
+

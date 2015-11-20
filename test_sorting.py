@@ -9,6 +9,7 @@ QS = 0
 MS = 1
 IS = 2
 SS = 3
+HS = 4
 
 class TestSorting(TestCase):
 
@@ -39,6 +40,9 @@ class TestSorting(TestCase):
     def test_insertionsort(self):
         self._trialtesting(IS)
 
+    def test_heapsort(self):
+        self._trialtesting(HS)
+
     def _trialtesting(self, sort_type):
         for i in range(SAMPLESIZE):
             if not self.ready:
@@ -47,25 +51,34 @@ class TestSorting(TestCase):
             unsorted_count = len(self.l)
             if sort_type == QS:
                 sorted_l = sorting.quicksort_inplace(self.l, 0, unsorted_count - 1)
+                self.assertTrue(self.l is sorted_l)
             elif sort_type == MS:
                 sorted_l = sorting.mergesort(self.l)
             elif sort_type == IS:
                 sorted_l = sorting.insertionsort(self.l)
             elif sort_type == SS:
                 sorted_l = sorting.selectsort(self.l)
+            elif sort_type == HS:
+                sorted_l = sorting.heapsort(self.l)
+                self.assertTrue(self.l is sorted_l)  # assert inplace as well
+
+            # Does the sorted count match the original count
             self.assertEqual(unsorted_count, len(sorted_l))
 
-            # Assert sorted list is in ascending order
+            # Is the list ascending?
             prev = -1
             for x in sorted_l:
                 self.assertGreaterEqual(x, prev)
                 prev = x
 
-            # Assert that the elements were all accounted for from dictionary
+            # Use dictionary to tally all elements and tick each one down as we
+            # iterate over the sorted list.
             for x in sorted_l:
                 self.assertTrue(x in self.d)
                 self.d[x] -= 1
                 self.assertGreaterEqual(self.d[x], 0)
+
+            # Dictionary should be empty by the end (all elements are zero)
             for k, v in self.d.items():
                 self.assertEqual(v, 0)
 
