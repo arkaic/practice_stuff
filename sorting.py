@@ -49,6 +49,7 @@ def quicksort_inplace(a, l, r):
         a[p] = temp
 
         return swap
+    # ----------------------------END NESTED FUNCTION --------------------------
 
     if l == r: return a
 
