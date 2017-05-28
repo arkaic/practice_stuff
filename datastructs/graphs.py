@@ -5,11 +5,10 @@ DFS = 0
 BFS = 1
 
 class Vertex:
-    def __init__(self, element=None, adjacents=[]):
+    def __init__(self, element=None, adjacents=list()):
         self.element = element
         self.adjacents = adjacents
         self.visited = False
-
 
 class AdjListGraph:
     def __init__(self, path=None, vertices=None):
@@ -48,11 +47,6 @@ class AdjListGraph:
                 raise Exception("Shouldn't happen when removing existing edge")
             return True
         return False
-
-    # def __str__(self):
-    #     s = ""
-    #     for v in self.vertices:
-
 
 
 def traverse(graph, searchtype):
