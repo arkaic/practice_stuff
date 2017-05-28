@@ -1,15 +1,16 @@
-import unittest, random
+import unittest, random, time
 from  unittest import TestCase
 from datastructs import sorting
 
-SAMPLESIZE = 100
-NUM_RANDOM = 500
+SAMPLESIZE = 1
+NUM_RANDOM = 5000
 
 QS = 0
 MS = 1
 IS = 2
 SS = 3
 HS = 4
+PS = 5
 
 class TestSorting(TestCase):
 
@@ -34,6 +35,9 @@ class TestSorting(TestCase):
     def test_mergesort(self):
         self._trialtesting(MS)
 
+    def test_pythonsort(self):
+        self._trialtesting(PS)
+
     def test_selectsort(self):
         self._trialtesting(SS)
 
@@ -49,18 +53,42 @@ class TestSorting(TestCase):
                 self.setUp()
 
             unsorted_count = len(self.l)
+            clock_start = None
+            clock_end = None
+            sort_name = ""
+            sorted_l = None
             if sort_type == QS:
+                clock_start = time.clock()
                 sorted_l = sorting.quicksort_inplace(self.l, 0, unsorted_count - 1)
+                clock_end = time.clock()
+                sort_name = 'quick sort'
                 self.assertTrue(self.l is sorted_l)
             elif sort_type == MS:
+                clock_start = time.clock()
                 sorted_l = sorting.mergesort(self.l)
+                clock_end = time.clock()
+                sort_name = 'merge sort'
             elif sort_type == IS:
+                clock_start = time.clock()
                 sorted_l = sorting.insertionsort(self.l)
+                clock_end = time.clock()
+                sort_name = 'insertion sort'
             elif sort_type == SS:
+                clock_start = time.clock()
                 sorted_l = sorting.selectsort(self.l)
+                clock_end = time.clock()
+                sort_name = 'selection sort'
             elif sort_type == HS:
+                clock_start = time.clock()
                 sorted_l = sorting.heapsort(self.l)
+                clock_end = time.clock()
+                sort_name = 'heap sort'
                 self.assertTrue(self.l is sorted_l)  # assert inplace as well
+            elif sort_type == PS:
+                clock_start = time.clock()
+                sorted_l = sorted(self.l)
+                clock_end = time.clock()
+                sort_name = 'python sort'
 
             # Does the sorted count match the original count
             self.assertEqual(unsorted_count, len(sorted_l))
@@ -81,6 +109,9 @@ class TestSorting(TestCase):
             # Dictionary should be empty by the end (all elements are zero)
             for k, v in self.d.items():
                 self.assertEqual(v, 0)
+
+            print('\n{}({} items) -> {}ms cpu time'.format(sort_name,
+                NUM_RANDOM, (clock_end - clock_start)*1000 ))
 
             self.tearDown()
 
