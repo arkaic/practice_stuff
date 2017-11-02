@@ -57,6 +57,12 @@ def make_change(amount):
 def make_all_change(amount):
     """ All combinations 
     Depth first search of every leaf
+
+    stack is running collection of possible coins
+    traveler carries coins
+    combos tracks valid combinations
+    Valid combos found in leafs
+    When found, push copy of what traveler has into combo, and pop from traveler
     """
     if amount > 100:
         return
@@ -71,10 +77,6 @@ def make_all_change(amount):
     traveler = Traveler()
     running_amt = 0
     while stack:
-        if stack[-1][1] <= traveler.len():  # next node is somewhere else
-            running_amt -= traveler.pop()
-            continue
-
         # take next node, going down
         traveler.append(stack.pop()[0])
         running_amt += traveler.peek()
@@ -83,12 +85,15 @@ def make_all_change(amount):
         if running_amt == amount:
             combos.append(traveler.purse.copy())
             running_amt -= traveler.pop()
-            continue
-        
-        # added unvisited
-        for coin in reversed(coins):
-            if (coin <= amount - running_amt) and coin <= traveler.peek():
-                stack.append((coin, traveler.len() + 1))
+            # trim stack of coins not in next level relative to traveler
+            while stack and stack[-1][1] <= traveler.len():
+                running_amt -= traveler.pop()
+        else:
+            # added unvisited
+            for coin in reversed(coins):
+                if coin <= amount - running_amt and coin <= traveler.peek():
+                    # second conditional filters out already tried combos
+                    stack.append((coin, traveler.len() + 1))
     
     print('all denominations for {} cents:'.format(amount))
     assert_combos(combos, amount)
@@ -117,6 +122,6 @@ def assert_combos(combos, amt):
     
 if __name__ == '__main__':
     for amount in WHATS_IN_YOUR_WALLET:
-        make_change(amount)
+        # make_change(amount)
         make_all_change(amount)
 
