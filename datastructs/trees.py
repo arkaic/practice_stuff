@@ -18,9 +18,14 @@ class BinaryNode:
 class BinarySearchTree:
 
     def __init__(self, root=None):
+        """
+        Args:
+            root - root BinaryNode
+        """
         self.root = root
         self.count = 0
         self.last_added_node = None
+        self.height = 0
         if root: 
             self.count += 1
             self.last_added_node = root
@@ -36,30 +41,51 @@ class BinarySearchTree:
         return _dfs(self.root)
 
     def insert(self, node):
-        def _dfi(m):
-            if node.element == m.element:
-                return False  # already exists
-            elif node.element < m.element:
-                if m.left: 
-                    return _dfi(m.left)
-                else:
-                    node.parent = m
-                    m.left = node
-                    self.last_added_node = node
-            else:
-                if m.right:
-                    return _dfi(m.right)
-                else:
-                    node.parent = m
-                    m.right = node
-                    self.last_added_node = node
+        """
+        Returns:
+            True if insertion successful, False otherwise
+        """
+        if not self.root:
+            assert self.height == 0
+            self.root = node
             self.count += 1
             return True
+        return self._dfi(self.root, node, 0)
 
-        if not self.root:
-            self.root = node
-            return True
-        return _dfi(self.root)
+    def _dfi(self, m, node, depth):
+        """
+        Recursively dfs and insert node into tree with m as parent
+
+        Args:
+            m     - BinaryNode representing our location
+            node  - BinaryNode to insert
+            depth - integer counter
+
+        Returns:
+            True if insertion made, False otherwise
+        """
+        if node.element == m.element:
+            return False  # already exists
+        elif node.element < m.element:
+            if m.left:
+                return self._dfi(m.left, node, depth + 1)
+            else:
+                node.parent = m
+                m.left = node
+                self.last_added_node = node
+        else:
+            if m.right:
+                return self._dfi(m.right, node, depth + 1)
+            else:
+                node.parent = m
+                m.right = node
+                self.last_added_node = node
+
+        # print('el=%s'%node.element)
+        # print('depth=%s'%depth)
+        self.height = max(self.height, depth + 1)
+        self.count += 1
+        return True
 
     def delete(self, el):
         """ 
@@ -68,6 +94,7 @@ class BinarySearchTree:
         Case 3: Node has right child only
         Case 4: Node has both children --> replace with smallest node in right
                 subtree
+        TODO update self.height
         """
         node = self.search(el)
 
@@ -182,7 +209,8 @@ class BinarySearchTree:
             else:
                 el_str = 'NIL'
             s += el_str + '\n'
-        s += '\nNode Count sans NILs = {}\n--------------------------'.format(c)
+        s += '\nNode Count sans NILs = {}'.format(c)
+        s += '\nNode height = %s\n--------------------------' % self.height
         return s
 
 
