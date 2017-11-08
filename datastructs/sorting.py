@@ -1,6 +1,12 @@
-""" All sorts in ascending order """
+# All sorts in ascending order
 
 def insertionsort(l):
+    """
+    In place insertion sort
+
+    Returns:
+        a list
+    """
     ptr = 1
     while ptr < len(l):
         c = ptr
@@ -13,6 +19,10 @@ def insertionsort(l):
     return l
 
 def selectsort(l):
+    """
+    Returns:
+        a list
+    """
     m = []
     while l:
         small = None
@@ -23,44 +33,69 @@ def selectsort(l):
     return m
 
 def quicksort_inplace(a, l, r):
-    """ Implementation uses the same list """
+    """
+    Implementation operates in place
 
-    def partition(a, start, end):
-        """ Pivot substitutes with the left pointer """
-        p = start
-        l = p + 1
+    Args:
+        a - list to be sorted
+        l - integer index for left side
+        r - integer index for right side
 
-        if len(a) < 2:
-            return a
-
-        while l < end:
-            while l < end and a[l] <= a[p]:
-                l += 1
-            while end > l and a[p] < a[end]:
-                end -= 1
-            temp = a[l]
-            a[l] = a[end]
-            a[end] = temp
-
-        if a[l] <= a[p]: swap = l
-        else: swap = l - 1
-        temp = a[swap]
-        a[swap] = a[p]
-        a[p] = temp
-
-        return swap
-    # ----------------------------END NESTED FUNCTION --------------------------
-
-    if l == r: return a
-
-    pivot = partition(a, l, r)
-    if l < pivot:
-        quicksort_inplace(a, l, pivot - 1)
-    if pivot < r:
-        quicksort_inplace(a, pivot + 1, r)
+    Returns:
+        a list
+    """
+    if l != r:
+        pivot = _partition(a, l, r)
+        if l < pivot:
+            quicksort_inplace(a, l, pivot - 1)
+        if pivot < r:
+            quicksort_inplace(a, pivot + 1, r)
 
     return a
 
+def _partition(a, start, end):
+    """
+    In-place partitioning using a[start] as pivot
+
+    Args:
+        a      - list
+        start  - integer index
+        end    - integer index
+
+    Returns:
+        an integer index for final location of pivot
+    """
+    piv = start
+    left = start + 1
+    right = end
+
+    if len(a) < 2:
+        return a
+
+    # goal: keep this pattern [LTE, .., pivot, .., GT]
+    # Two index pointers left and end move towards each other and swap any elements
+    # to fit above pattern. End this loop when they touch to determine location of pivot
+    while left < right:
+        while left < right and a[left] <= a[piv]:
+            left += 1
+        while left < right and a[right] > a[piv]:
+            right -= 1
+        temp = a[left]
+        a[left] = a[right]
+        a[right] = temp
+
+    # determine final pivot location
+    if a[left] <= a[piv]:
+        final_piv = left
+    else:
+        final_piv = left - 1
+
+    # swap places with pivot subs
+    temp = a[final_piv]
+    a[final_piv] = a[piv]
+    a[piv] = temp
+
+    return final_piv
 
 def mergesort(l):
     def merge(m, n):
