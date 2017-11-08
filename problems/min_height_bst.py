@@ -1,3 +1,7 @@
+"""
+    Problem: Given a sorted (increasing order) array, write an algorithm to create
+    a binary tree with minimal height.
+"""
 import os
 import random
 import sys
@@ -17,10 +21,6 @@ TEST_ARRAYS = [
 ]
 
 def solve_it(arr, bst):
-    """
-    Problem: Given a sorted (increasing order) array, write an algorithm to create
-    a binary tree with minimal height.
-    """
     if len(arr) == 1:
         assert bst.insert(BinaryNode(arr.pop()))  # assert that insertion works
     elif len(arr) > 1:
